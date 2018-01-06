@@ -3,13 +3,13 @@ function [ bool ] = isZero( val )
 %   Detailed explanation goes here
 
 global epsZero;
-if((exist(epsZero) ~= 1) || (epsZero == 0))
+if((epsZero == 0))
     epsZero = 5*eps;
 end 
 
 if(abs(val) > epsZero) 
-    bool = true;
-else
     bool = false;
+else
+    bool = true;
 end
 
