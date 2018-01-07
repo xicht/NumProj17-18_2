@@ -1,4 +1,4 @@
-function [ output_args ] = implicitCurve( F, x0, y0, steps, stepWidth )
+function [ x, y ] = implicitCurve( F, x0, y0, steps, stepWidth )
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
