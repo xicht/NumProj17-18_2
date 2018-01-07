@@ -1,6 +1,11 @@
 function [ d ] = ImplicitDiff( F, x, y, w )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%ImplicitDiff Differentation einer impliziten Funktion f(x) 
+%die F(x, f(x))= löst.
+% Vorr entsprechend Satz über implizite Funktionen für dF/dy in (x,f(x))!=0
+% df/dx = -dF/dx / dF/dy
+% F die Funktion
+% x,y eine Nullstelle von F
+% w Startschrittweit für Annäherung der Differentation
 
 assert(isZero(F(x,y)));
 assert(w>0);

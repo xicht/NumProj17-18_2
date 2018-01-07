@@ -1,6 +1,7 @@
 function [ phi2 ] = myDiff( F, x, w )
 %MYDIFF Summary of this function goes here
 %   Detailed explanation goes here
+
 global epsZero;
 phi2 = (F(x+w)-F(x))/w;
 while(true)

@@ -1,6 +1,6 @@
 function [ bool ] = isZero( val )
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+%isZero Funktion überprüft ob val in Umgebung von 0 liegt.
+% Umgebung definiert durch glob. Var epsZero - Unbedingt initialisieren!!!
 
 global epsZero;
 if((epsZero == 0))
