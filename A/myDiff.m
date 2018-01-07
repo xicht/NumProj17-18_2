@@ -1,6 +1,12 @@
 function [ phi2 ] = myDiff( F, x, w )
-%MYDIFF Summary of this function goes here
-%   Detailed explanation goes here
+%MYDIFF Nähert Ableitung einer Funktion R->R an.
+% F funktion
+% x Punkt in dem die Ableitung gesucht wird
+% w Startschrittweite
+%
+%Schrittweite hn wird mit jeder Iteration halbiert bis die Differenz der
+%Differentenquotion für hn und hn+1 absolut oder relativ kleiner 10^5*eps
+%ist
 
 global epsZero;
 phi2 = (F(x+w)-F(x))/w;
