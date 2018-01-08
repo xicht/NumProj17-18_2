@@ -1,6 +1,6 @@
 
 global epsZero;
-epsZero = 5*eps;
+epsZero = 100*eps;
 
 %G = @(x,y)sin(x^2)-y
 G = @(x,y) sin(10*(sin(x)-y))

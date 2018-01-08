@@ -4,7 +4,7 @@ function [ bool ] = isZero( val )
 
 global epsZero;
 if((epsZero == 0))
-    epsZero = 5*eps;
+    epsZero = 100*eps;
 end 
 
 if(abs(val) > epsZero) 
