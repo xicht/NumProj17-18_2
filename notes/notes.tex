@@ -1,0 +1,89 @@
+\documentclass[a4paper]{article}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+\usepackage{enumerate}
+
+
+%%%  AMSTHM
+\usepackage{amsthm}
+\newtheorem{satz}{Satz}
+\newtheorem{lemma}[satz]{Lemma}
+\theoremstyle{definition}
+\newtheorem{defi}[satz]{Definition}
+\newtheorem{bsp}[satz]{Beispiel}
+\renewenvironment{proof}{\text{\textit{Beweis.}}}{\qed}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+
+%%  MACROS MATHE
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\U}{\mathcal{U}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\OO}{\mathcal{O}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\PM}[1]{\mathcal{P}(#1)}
+\newcommand{\gdw}{\;\Longleftrightarrow\;}
+\newcommand{\ve}[1]{{\emph{\textbf{#1}}}}
+\newcommand{\norm}[2][]{\left\|#2\right\|_{#1}}
+
+
+\newcommand{\seq}[2]{\left({#1}_{#2}\right)_{#2 \in \N}}
+\newcommand{\seqq}[3]{\left({#1}_{{#2}_{#3}}\right)_{#3 \in \N}}
+\newcommand{\seqqq}[4]{\left({#1}_{{{#2}_{#3}}_{#4}}\right)_{#4 \in \N}}
+
+\newcommand{\dist}[2]{\textup{dist}\left(#1,#2\right)}
+
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\subset}{\subseteq}
+\renewcommand{\supset}{\supseteq}
+
+\begin{document}
+\section{Funktionen zum Testen}
+
+Sei $F(x,y) := a \cdot \sin \Big(c \big( \sin(x) -y \big)\Big) $
+
+Dann gilt:
+\begin{align*}
+F(x,y)=0 &\iff \sin \Big(c \big( \sin(x) -y \big)\Big) = 0 \\
+&\iff \exists k \in \Z :  c \big( \sin(x) -y \big) = k \pi \\
+&\iff \exists k \in \Z :   \sin(x) -y  = \frac{k}{c} \pi \\
+&\iff \exists k \in \Z :    y  = \sin(x) -\frac{k}{c} \pi \\
+\end{align*}
+Also ist die Nullstellenmenge Kopien des Graphen von $\sin(x)$ im Abstand von $\frac{k}{c} \pi$ an der $y$-Achse.
+
+Außerdem ist
+\[
+\frac{\partial F}{\partial y}(x,y) =  -c\cdot a \cdot\cos \Big(c \big( \sin(x) -y \big)\Big)
+\]
+und analog
+\begin{align*}
+\frac{\partial F}{\partial y}(x,y) =0 \iff \exists k \in \Z :    y  = \sin(x) -\frac{2k+1}{2c} \pi \\
+\end{align*}
+und 
+\[
+\frac{\partial F}{\partial x}(x,y) =  c \cdot a \cdot\cos \Big(c \big( \sin(x) -y \big)\Big) \cos(x)
+\]
+mit
+\begin{align*}
+\frac{\partial F}{\partial x}(x,y) =0 \iff \exists k \in \Z :    y  = \sin(x) -\frac{2k+1}{2c} \pi \;\lor\;  y= \frac{2k+1}{2} \pi\\
+\end{align*}
+Also sind die Vorraussetzungen an die Ableitung leider nicht immer erfüllt
+
+\end{document}
+
+
+

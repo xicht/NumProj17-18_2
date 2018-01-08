@@ -5,7 +5,7 @@ k=100;
 x=linspace(0,2*pi,k);
 y=linspace(0,2*pi,k);
 
-F=@(x,y)sin(20*(sin(x)-y))
+F=@(x,y)sin(10*(sin(x)-y))
 
 [X,Y]=meshgrid(x,y);
 
