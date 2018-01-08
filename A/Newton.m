@@ -6,7 +6,7 @@ function [ x2 ] = Newton( F, x )
 % absolut oder relativ nahe 0 ist
 
 f = myDiff(F, x, 0.00001);
-assert(f ~= 0);
+assert(~isZero(f));
 x1 = x;
 x2 = x - F(x)/f;
 

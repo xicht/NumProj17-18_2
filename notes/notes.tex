@@ -83,7 +83,14 @@ mit
 \end{align*}
 Also sind die Vorraussetzungen an die Ableitung leider nicht immer erfüllt
 
+\hrule
 
+\hrule 
+sei f(x)=sin(x)-sin(y) mit startwert 0 und schrittweite pi/100. dann bleibt der algrothimus beim 50. schritt stecken (anscheinend endlosschleife) und gibt auch keinen fehler aus. dort ist Fy=0 und Fx=0. es scheint irgendwo eine sicherheitsabfrage zu fehlen, ich weiß noch nicht wo.
+
+nimmt man eine schrittweite, die dafür sorgt, dass man pi/2 nie genau trifft läuft der algroithmus durch liefert dort aber sinnlose ergebnisse. in wirklichkeit befinden sich dort 2 im rechten winkel schneidende geraden. 
+
+für $x^2+y^2-1$ funktioniert der algorithmus nicht, auch auf bereichen wo keine der beiden ableitungen verschwindet
 
 \end{document}
 

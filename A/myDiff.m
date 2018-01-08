@@ -12,6 +12,7 @@ global epsZero;
 phi2 = (F(x+w)-F(x))/w;
 while(true)
     w = w/2;
+    assert(~isZero(w));
     phi1 = phi2;
     phi2 = (F(x+w)-F(x))/w;
     if(diffLoopCheck(phi1, phi2, eps*10^5))
