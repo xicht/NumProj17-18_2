@@ -14,7 +14,7 @@ y = zeros(1,steps+1);
 y(1) = y0;
 
 for i = 2:steps+1
-    y(i) = ImplicitDiff(F, x(i-1), y(i-1), 0.00001);    %predictor
+    y(i) = y(i-1)+ ImplicitDiff(F, x(i-1), y(i-1), 0.00001) * stepWidth;    %predictor
     f = @(z)F(x(i), z);
     y(i) = Newton(f, y(i));                             %corrector
 end
