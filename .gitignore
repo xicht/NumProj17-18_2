@@ -1,2 +1,8 @@
 
 *.asv
+
+notes/notes\.aux
+
+notes/notes\.log
+
+notes/notes\.synctex\.gz
