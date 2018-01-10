@@ -1,11 +1,11 @@
 
 %Raster:
 %linspace(anfang,ende,anzahl der punkte)
-k=100;
-x=linspace(0,2*pi,k);
-y=linspace(0,2*pi,k);
+k=150;
+x=linspace(-3,3,k);
+y=linspace(-3,3,k);
 
-F=@(x,y)x.^2+y.^2-1
+F=@(x,y)sin(x.^2+y.^2-atan2(y,x))
 
 [X,Y]=meshgrid(x,y);
 
