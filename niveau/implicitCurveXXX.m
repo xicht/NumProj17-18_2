@@ -7,8 +7,8 @@ function [ x, y ] = implicitCurveXXX( F, dFx, dFy, x0, y0, steps, stepWidth )
 % x0,y0 Startpunkt, es muss F(x0,y0) == 0 gelten
 % Anzahl der zu berechnenten Wertepaare
 % Schrittweite an der x-Achse.
-
-assert(isZero(F(x0, y0)));
+F(x0,y0)
+%assert(isZero(F(x0, y0)));
 
 x = zeros(1,steps+1);
 y = zeros(1,steps+1);

@@ -24,14 +24,14 @@ X0=zeros(1,k);
 Y0=zeros(1,k);
 
 for j = 1:k
-    X{j}=zeros(Steps(j)+1);
-    Y{j}=zeros(Steps(j)+1);
+    X{j}=zeros(Steps(j)+1,1);
+    Y{j}=zeros(Steps(j)+1,1);
     Fj = @(x,y)F(x,y) - Z(j);
     [X{j},Y{j},tmp]=findZero(Fj,a,b,c,d);
     xj=X{j}
     yj=Y{j}
     assert(tmp==0); % das gehört noch besser
-    [X{j},Y{j}] = implicitCurveXXX( Fj, dFx, dFy, X0(j), Y0(j), Steps(j), StepWidth(j) );
+    [X{j},Y{j}] = implicitCurveXXX( Fj, dFx, dFy, xj, yj, Steps(j), StepWidth(j) );
     
 end
 

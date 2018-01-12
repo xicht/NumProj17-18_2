@@ -68,14 +68,15 @@ my = (c+d)/2;
 err = 0;
 
 
-for j=k:-1:0
+for j=k:-1:1
     [x0y0, err2] = findNegVal2(F,mx-(b-a)/2^j,mx+(b-a)/2^j,my-(d-c)/2^j,my+(d-c)/2^j,n);
+    %suche_in = [[mx-(b-a)/2^j,mx+(b-a)/2^j],[my-(d-c)/2^j,my+(d-c)/2^j]]
     if err2==0
         return;
     end
 end
 %wenn man bis daher kommt wurde nix gefunden
-warning('ich war hier.');
+warning('gar keine NSt gefunden');
 err=1;
 x0y0=[0,0];
 
@@ -91,81 +92,93 @@ mx = (a+b)/2;
 my = (c+d)/2;
 
 dx = (b-a)/(2*n);
-dy = (b-a)/(2*n);
+dy = (d-c)/(2*n);
 
-for j=1:n %durchsuche in schleifen von der mitte aus
-    curr_x=mx + j*dx;
-    if F(curr_x,my) <0
-        x0y0=[curr_x,my];
-        return;
+for j=-n:n
+    for k=-n:n
+        %[mx+j*dx,my+k*dy]
+        if F(mx+j*dx,my+k*dy) < 0
+            x0y0 = [mx+j*dx,my+k*dy];
+            return;
+        end
     end
-    for k=1:j
-       if F(curr_x,my+k*dy) <0
-           x0y0=[curr_x,my+k*dy];
-           return;
-       end
-       if F(curr_x,my-k*dy)  <0
-           x0y0=[curr_x,my-k*dy];
-           return;
-       end
-    end
-    
-    curr_x=mx - j*dx;
-    if F(curr_x,my)  <0
-       x0y0=[curr_x,my];
-       return;
-    end
-    for k=1:j
-       if F(curr_x,my+k*dy) <0
-           x0y0=[curr_x,my+k*dy];
-           return;
-       end
-       if F(curr_x,my-k*dy)  <0
-           x0y0=[curr_x,my-k*dy];
-           return;
-       end
-    end
-    
-    %und nochmal umgedreht
-    curr_y=my + j*dy;
-    if F(mx,curr_y)  <0
-       x0y0=[mx,curr_y];
-       return;
-    end
-    for k=1:j-1
-       if F(mx+k*dx,curr_y)  <0
-           x0y0=[mx+k*dx,curr_y];
-           return;
-       end
-       if F(mx-k*dx,curr_y)  <0
-           x0y0=[mx-k*dx,curr_y];
-           return;
-       end
-    end
-    
-    curr_y=my - j*dy;
-    if F(mx,curr_y)  <0
-       x0y0=[mx,curr_y];
-       return;
-    end
-    for k=1:j-1
-       if F(mx+k*dx,curr_y)  <0
-           x0y0=[mx+k*dx,curr_y];
-           return;
-       end
-       if F(mx-k*dx,curr_y)  <0
-           x0y0=[mx-k*dx,curr_y];
-           return;
-       end
-    end
-       
 end
-    
+
+% 
+% 
+% for j=1:n %durchsuche in schleifen von der mitte aus
+%     curr_x=mx + j*dx;
+%     if F(curr_x,my) <0
+%         x0y0=[curr_x,my];
+%         return;
+%     end
+%     for k=1:j
+%        if F(curr_x,my+k*dy) <0
+%            x0y0=[curr_x,my+k*dy];
+%            return;
+%        end
+%        if F(curr_x,my-k*dy)  <0
+%            x0y0=[curr_x,my-k*dy];
+%            return;
+%        end
+%     end
+%     
+%     curr_x=mx - j*dx;
+%     if F(curr_x,my)  <0
+%        x0y0=[curr_x,my];
+%        return;
+%     end
+%     for k=1:j
+%        if F(curr_x,my+k*dy) <0
+%            x0y0=[curr_x,my+k*dy];
+%            return;
+%        end
+%        if F(curr_x,my-k*dy)  <0
+%            x0y0=[curr_x,my-k*dy];
+%            return;
+%        end
+%     end
+%     
+%     %und nochmal umgedreht
+%     curr_y=my + j*dy;
+%     if F(mx,curr_y)  <0
+%        x0y0=[mx,curr_y];
+%        return;
+%     end
+%     for k=1:j-1
+%        if F(mx+k*dx,curr_y)  <0
+%            x0y0=[mx+k*dx,curr_y];
+%            return;
+%        end
+%        if F(mx-k*dx,curr_y)  <0
+%            x0y0=[mx-k*dx,curr_y];
+%            return;
+%        end
+%     end
+%     
+%     curr_y=my - j*dy;
+%     if F(mx,curr_y)  <0
+%        x0y0=[mx,curr_y];
+%        return;
+%     end
+%     for k=1:j-1
+%        if F(mx+k*dx,curr_y)  <0
+%            x0y0=[mx+k*dx,curr_y];
+%            return;
+%        end
+%        if F(mx-k*dx,curr_y)  <0
+%            x0y0=[mx-k*dx,curr_y];
+%            return;
+%        end
+%     end
+%        
+% end
+%     
 
 %wenn wir bis daher kommen waren wir erfolglos
 x0y0=[0,0];
 err=1; 
-warning('da war ich auch');
+warning('jetzt keine NSt gefunden');
 
 end
 

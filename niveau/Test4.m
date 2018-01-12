@@ -7,9 +7,9 @@ dGx = @(x,y) 2*x
 dGy = @(x,y) 2*y
 
 
-Z=[1];
-Steps=300*[1:1];
-StepWidth=5*10^-3*ones(1,1);
+Z=[1,2,3,4];
+Steps=10000*[1:4];
+StepWidth=5*10^-4*ones(1,4);
 
 a=-0.6;
 b=-0.4;
