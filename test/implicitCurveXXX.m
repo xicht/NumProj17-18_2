@@ -49,7 +49,7 @@ for i = 2:steps+1
         y(i) = y(i-1) - dx/dy * stepWidth;    %predictor
         G = @(z)F(x(i), z);
         g = @(z)dFy(x(i), z);
-        %y(i) = Newton(G, g, y(i));            %corrector
+        y(i) = Newton(G, g, y(i));            %corrector
         
         %assert(isZero(F(x(i),y(i))/2));
     end

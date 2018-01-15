@@ -10,12 +10,22 @@ assert(~isZero(f(x)));
 x1 = x;
 x2 = x - F(x)/f(x);
 
+syms xx
+F(xx)
+f(xx)
+pause;
+
 iters=0;
 wrong=0;
 %while(~isZero(x1-x2) && ~isZero((x1-x2)/x1) && ~isZero(F(x2)) )
 while( ~isZero(F(x2)) )
 x1 = x2;
 assert(abs(f(x2)) ~= Inf);
+
+while f(x2)==0
+    x2=x2+10^-14
+end
+
 assert(f(x2) ~= 0);
 x2 = x2 - F(x2)/f(x2);
 iters=iters+1;
