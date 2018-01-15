@@ -30,9 +30,6 @@ for j = 1:k
     [X{j},Y{j},tmp]=findZero(Fj,a,b,c,d);
     xj=X{j}
     yj=Y{j}
-    if tmp~=0
-        error('Funktionswert nicht gefunden');
-    end
     assert(tmp==0); % das gehört noch besser
     [X{j},Y{j}] = implicitCurveXXX( Fj, dFx, dFy, xj, yj, Steps(j), StepWidth(j) );
     
