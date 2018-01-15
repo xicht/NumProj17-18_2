@@ -9,7 +9,7 @@ dGy = @(x,y) 2*y
 X0=[0,0,0,0];
 Y0=[1,1.5,2,2.5];
 
-[X, Y] = nivlines1(G, dGx, dGy, X0, Y0, 400, 10^-2); % mit 410 gehts schief
+[X, Y] = nivlines1(G, dGx, dGy, X0, Y0, 1500, 10^-2); % mit 410 gehts schief
 
 figure(1)
 plot(X(1,:),Y(1,:))
