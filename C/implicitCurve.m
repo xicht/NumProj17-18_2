@@ -20,7 +20,7 @@ for i = 2:steps+1
     dy = dFy(x(i-1), y(i-1));
     dx = dFx(x(i-1), y(i-1));
     
-    if(b == 0)
+    if(dx == 0)
         assert(dy ~= 0);
         x(i) = x0 + (i-1)*stepWidth;
         y(i) = y(i-1) - dx/dy * stepWidth;    %predictor
@@ -29,17 +29,28 @@ for i = 2:steps+1
         y(i) = Newton(G, g, y(i));            %corrector
         lastphi = 0;
     else
-        phi = atan(a/b); %richtungsableitung maximieren
-        if(i > 2)
-            sp = [y(i-1)-y(i-2),x(i-1)-x(i-2)] * [sin(x), cos(x)];
+        phi = atan(dy/dx); %richtungsableitung maximieren
+        chi = phi - pi/2; %schrittrichtung, minimale richtungsableitung, orthogonal zu phi
+        if(i > 2) %evtl chi drehen
+            sp = [y(i-1)-y(i-2);x(i-1)-x(i-2)] * [sin(chi); cos(chi)];
             if(~iszero(sp) && sp < 0)
                 phi = phi+pi;
+                chi = chi + pi;
             elseif(iszero(sp))
-                if(abs(F(stepwidth*sin(phi),stepwidth*cos(phi))) < abs(F(stepwidth*sin(phi+pi),stepwidth*cos(phi+pi))))
+                if(abs(F(stepWidth*sin(chi),stepWidth*cos(chi))) < abs(F(stepWidth*sin(chi+pi),stepWidth*cos(chi+pi))))
                     phi = phi + pi;
+                    chi = chi + pi;
                 end
             end
+        else
+            if(abs(F(stepWidth*sin(chi),stepWidth*cos(chi))) < abs(F(stepWidth*sin(chi+pi),stepWidth*cos(chi+pi))))
+                phi = phi + pi;
+                chi = chi + pi;
+            end
         end
+        
+        step = stepWidth*[sin(chi);cos(chi)]; %Schrittvektor
+        d_chi =  [cos(chi) -sin(chi); sin(chi) cos(chi)]*[dy; dx];
         
         
         lastphi = phi;
