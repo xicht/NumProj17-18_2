@@ -23,8 +23,8 @@ colorbar;
 colormap(jet);
 
 figure(3); %Äquipotenziallinien
-%contour(X,Y,Z,'ShowText','on');
-contour(X,Y,Z,'ShowText','off');
+contour(X,Y,Z,'ShowText','on');
+%contour(X,Y,Z,'ShowText','off');
 colormap(jet);
 
 

@@ -18,7 +18,7 @@ x(1) = x0;
 for i = 2:steps+1
     dy = dFy(x(i-1), y(i-1));
     dx = dFx(x(i-1), y(i-1));
-    if(abs(dy)*3 < abs(dx))
+    if(abs(dy)*2 < abs(dx))
         G = @(x,y) F(y,x);
         dGy = @(x,y) dFx(y,x);
         dGx = @(x,y) dFy(y,x);

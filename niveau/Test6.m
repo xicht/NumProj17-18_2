@@ -2,19 +2,19 @@
 global epsZero;
 epsZero = 100*eps;
 
-G = @(x,y) x.^2+y.^2
-dGx = @(x,y) 2*x
-dGy = @(x,y) 2*y
+G = @(x,y) -x.^2.*y.^3 + (x.^2+y.^2-1).^3
+dGx = @(x,y) 6.*x.*(x.^2 + y.^2 - 1)^2 - 2.*x.*y.^3
+dGy = @(x,y) 6.*y.*(x.^2 + y.^2 - 1).^2 - 3.*x^2.*y.^2
 
 
-Z=[1]; %vorgebene funktionswerte
-Steps=200*ones(1,1);
+Z=[0]; %vorgebene funktionswerte
+Steps=15000*ones(1,1);
 StepWidth=5*10^-4*ones(1,1)
 
-a=-0.6;
-b=-0.4;
-c=-3;
-d=3;
+a=-1;
+b=1;
+c=-1;
+d=1;
 
 [X, Y] = nivlines3(G, dGx, dGy, Z, a, b, c, d, Steps, StepWidth); 
 
