@@ -14,10 +14,37 @@ x = zeros(1,steps+1);
 y = zeros(1,steps+1);
 y(1) = y0;
 x(1) = x0;
+lastphi = 0;
 
 for i = 2:steps+1
     dy = dFy(x(i-1), y(i-1));
     dx = dFx(x(i-1), y(i-1));
+    
+    if(b == 0)
+        assert(dy ~= 0);
+        x(i) = x0 + (i-1)*stepWidth;
+        y(i) = y(i-1) - dx/dy * stepWidth;    %predictor
+        G = @(z)F(x(i), z);
+        g = @(z)dFy(x(i), z);
+        y(i) = Newton(G, g, y(i));            %corrector
+        lastphi = 0;
+    else
+        phi = atan(a/b); %richtungsableitung maximieren
+        if(i > 2)
+            sp = [y(i-1)-y(i-2),x(i-1)-x(i-2)] * [sin(x), cos(x)];
+            if(~iszero(sp) && sp < 0)
+                phi = phi+pi;
+            elseif(iszero(sp))
+                if(abs(F(stepwidth*sin(phi),stepwidth*cos(phi))) < abs(F(stepwidth*sin(phi+pi),stepwidth*cos(phi+pi))))
+                    phi = phi + pi;
+                end
+            end
+        end
+        
+        
+        lastphi = phi;
+    end
+    
     if(abs(dy)*3 < abs(dx))
         G = @(x,y) F(y,x);
         dGy = @(x,y) dFx(y,x);
