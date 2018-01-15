@@ -30,16 +30,16 @@ for i = 2:steps+1
         lastphi = 0;
     else
         phi = atan(dy/dx); %richtungsableitung maximieren
-        chi = phi - pi/2; %schrittrichtung, minimale richtungsableitung, orthogonal zu phi
-        if(i > 2) %evtl chi drehen
-            sp = [y(i-1)-y(i-2);x(i-1)-x(i-2)] * [sin(chi); cos(chi)];
-            if(~iszero(sp) && sp < 0)
-                phi = phi+pi;
-                chi = chi + pi;
-            elseif(iszero(sp))
+        chi = phi - pi/2; %minimale richtungsableitung, orthogonal zu phi
+        if(i > 2) %evtl chi und phi umdrehen
+            sp = [x(i-1)-x(i-2) y(i-1)-y(i-2)] * [cos(chi); sin(chi)];
+            if(~isZero(sp) && sp < 0)
+                phi = phi-pi;
+                chi = chi - pi;
+            elseif(isZero(sp))
                 if(abs(F(stepWidth*sin(chi),stepWidth*cos(chi))) < abs(F(stepWidth*sin(chi+pi),stepWidth*cos(chi+pi))))
-                    phi = phi + pi;
-                    chi = chi + pi;
+                    phi = phi - pi;
+                    chi = chi - pi;
                 end
             end
         else
@@ -49,36 +49,31 @@ for i = 2:steps+1
             end
         end
         
-        step = stepWidth*[sin(chi);cos(chi)]; %Schrittvektor
-        d_chi =  [cos(chi) -sin(chi); sin(chi) cos(chi)]*[dy; dx];
+        dir = [cos(chi);sin(chi)];
+        dir_ortho = [cos(phi);sin(phi)];
         
+        x(i) = x(i-1)+stepWidth*dir(1);
+        y(i) = y(i-1)+stepWidth*dir(2);
         
-        lastphi = phi;
-    end
-    
-    if(abs(dy)*3 < abs(dx))
-        G = @(x,y) F(y,x);
-        dGy = @(x,y) dFx(y,x);
-        dGx = @(x,y) dFy(y,x);
-        if(i > 2)
-            dir = sign(y(i-1)-y(i-2));
-        elseif(abs(dy) > 10^-12)
-            dir = sign(dy);
-        else
-            dir = 1;
-        end
-        [y_rek, x_rek] = implicitCurve(G, dGx, dGy, y(i-1), x(i-1), steps+1-i, abs(stepWidth)*dir);
-        x(i:end) = x_rek; 
-        y(i:end) = y_rek; 
-        break;
-    else
-        assert(abs(dx/dy) ~= Inf);
+        G = @(z) F(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
+        gx = @(z) dFx(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
+        gy = @(z) dFy(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
+        g = @(z) dir_ortho' * [dir_ortho(1)*gx(z); dir_ortho(2)^2*gy(z)];
+   figure(1);     
+    l = linspace(-0.5,0.5,10000);
 
-        x(i) = x0 + (i-1)*stepWidth;
-        y(i) = y(i-1) - dx/dy * stepWidth;    %predictor
-        G = @(z)F(x(i), z);
-        g = @(z)dFy(x(i), z);
-        y(i) = Newton(G, g, y(i));            %corrector
+    plot(l, G(l),l,gx(l),l,gy(l),l,g(l));
+    legend('G','gx', 'gy', 'g')
+    
+    
+        h = Newton(G, g, 0);            %corrector
+        
+        x(i) = x(i)+ h*dir_ortho(1);
+        y(i) = y(i)+ h*dir_ortho(2);
+    figure(2);
+    plot(x(1:i-1), y(1:i-1));
+             
+        lastphi = phi;
     end
 end
 
