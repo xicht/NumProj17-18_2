@@ -92,6 +92,24 @@ nimmt man eine schrittweite, die dafür sorgt, dass man pi/2 nie genau trifft l�
 
 für $x^2+y^2-1$ funktioniert der algorithmus nicht, auch auf bereichen wo keine der beiden ableitungen verschwindet
 
+\section{Krümmung}
+\textbf{Satz:} Sei $f \in C^2((a,b))$ und $x \in (a,b)$. Dann ist 
+\[
+f''(x) = \lim_{h \to 0} \frac{f(x+h) -2f(x) + f(x-h)}{h^2}.
+\]
+
+\textbf{Beweis:}
+Es gilt:
+\begin{align*}
+f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h} \qquad  f''(x) = \lim_{h \to 0} \frac{f'(x+h)-f'(x)}{h}
+\end{align*}
+Da nach Vorraussetzung alle diese Funktionsgrenzwerte existieren, ergibt Einsetzen:
+\begin{align*}
+f''(x) &= \lim_{h \to 0} \frac{\lim_{h \to 0} \frac{f(x+h)-f(x)}{h}-\lim_{h \to 0} \frac{f(x+2h)-f(x+h)}{h}}{h} = \\
+&=\lim_{h \to 0}  \frac{\frac{f(x+h)-f(x)}{h}- \frac{f(x+2h)-f(x+h)}{h}}{h} = \lim_{h \to 0} \frac{f(x+2h) -2f(x+h) + f(x)}{h^2}.
+\end{align*}
+Wegen der vorausgesetzten Stetigkeit der zweiten Ableitung ist $\lim_{h \to 0} f''(x-h)=f''(x)$, womit die Aussage aus der obigen Gleichheit folgt. \hfill $\blacksquare$
+
 \end{document}
 
 
