@@ -110,6 +110,27 @@ f''(x) &= \lim_{h \to 0} \frac{\lim_{h \to 0} \frac{f(x+h)-f(x)}{h}-\lim_{h \to 
 \end{align*}
 Wegen der vorausgesetzten Stetigkeit der zweiten Ableitung ist $\lim_{h \to 0} f''(x-h)=f''(x)$, womit die Aussage aus der obigen Gleichheit folgt. \hfill $\blacksquare$
 
+Daraus ergibt sich, dass bei konstanter \texttt{stepWidth} folgender Ausdruck ein sinnvolle Abschätzung für die Krümmung ist:
+\verb| (y(i-2)-2*y(i-1)+y(i))/stepWidth^2 |
+
+Ist die \texttt{stepWidth} nicht konstant macht dieser offensichtlich keinen Sinn, gerade dann ist aber der Krümmungsschätzer wichtig.
+
+Heuristisch ist $\frac{f(x_1)-f(x_2)}{x_1-x_2}$ eine bessere Schätzung für $f'((x_1+x_2)/2)$ als etwa für $f'(x_1)$ oder $f'(x_2)$. 
+
+Betrachtet man nämlich den Ausdruck. $\frac{f(x_1)-f(x_2)}{x_2-x_1}$  als Näherung von  $f'((x_1+x_2)/2)$ entspricht er genau eine Auswertung des zentralen Differenzeinquotienten, der quadratische Konvergenzordnung hat, mit $h:= (x_1-x_2)/2$. Als Näherung von $f'(x_1)$ entspricht der Ausdruck hingegen der Auswertung des einsteitigen Differenzenquotienten, der lediglich lineare Konvergenzordnung hat, mit einem doppelt so großen $h$.
+
+Seien nun $x_1 < x_2 < x_3$ vorgegeben und wendet man vorherige Überlegung für die Annäherung der ersten Ableitungen für $x_1, x,2$ sowie $x_2,x_3$ an und schreibt das Ergebnis in einen Differenzenquotienten erhält man folgende Näherung für die Krümmung:
+\begin{align*}
+k(x_1,x_2,x_3) :=  \frac{\frac{f(x_1)-f(x_2)}{x_1-x_2} - \frac{f(x_2)-f(x_3)}{x_2-x_3}}{\frac{x_1+x_2}{2} - \frac{x_2+x_3}{2}  } 
+=
+2 \frac{(f(x_1)-f(x_2))(x_2-x_3) + (f(x_2)-f(x_3))(x_2-x_1)}{(x_1-x_2)(x_2-x_3)(x_1-x_3)}
+\end{align*}
+
+Mit dem Mittelwertsatz der Differenzialrechnung kann man auch leicht zeigen, dass es ein $\xi \in (x_1,x_3)$ gibt, sodass $f''(\xi) = k(x_1,x_2,x_3)$. 
+
+
+
+
 \end{document}
 
 
