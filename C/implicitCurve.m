@@ -18,17 +18,30 @@ lastphi = 0;
 lastchi = 0;
 
 for i = 2:steps+1
+    
+    [ xr, yr, phi, chi ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidth );
+    x(i) = xr;
+    y(i) = yr;
+    lastphi = phi;
+    lastchi = chi;
+end
+
+end
+
+
+function [ xr, yr, phi, chi ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidth )
     dy = dFy(x(i-1), y(i-1));
     dx = dFx(x(i-1), y(i-1));
     
     if(dx == 0)
         assert(dy ~= 0);
-        x(i) = x0 + (i-1)*stepWidth;
-        y(i) = y(i-1) - dx/dy * stepWidth;    %predictor
-        G = @(z)F(x(i), z);
-        g = @(z)dFy(x(i), z);
-        y(i) = Newton(G, g, y(i));            %corrector
-        lastphi = 0;
+        xr = x0 + (i-1)*stepWidth;
+        yr = y(i-1) - dx/dy * stepWidth;    %predictor
+        G = @(z)F(xr, z);
+        g = @(z)dFy(xr, z);
+        yr = Newton(G, g, yr);            %corrector
+        lastchi = 0;
+        lastphi = pi/2;
     else
         phi = atan(dy/dx); %richtungsableitung maximieren
         chi = phi - pi/2; %minimale richtungsableitung, orthogonal zu phi
@@ -53,12 +66,12 @@ for i = 2:steps+1
         dir = [cos(chi);sin(chi)];
         dir_ortho = [cos(phi);sin(phi)];
         
-        x(i) = x(i-1)+stepWidth*dir(1);
-        y(i) = y(i-1)+stepWidth*dir(2);
+        xr = x(i-1)+stepWidth*dir(1);
+        yr = y(i-1)+stepWidth*dir(2);
         
-        G = @(z) F(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
-        gx = @(z) dFx(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
-        gy = @(z) dFy(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
+        G = @(z) F(xr+z*dir_ortho(1), yr+z*dir_ortho(2));
+        gx = @(z) dFx(xr+z*dir_ortho(1), yr+z*dir_ortho(2));
+        gy = @(z) dFy(xr+z*dir_ortho(1), yr+z*dir_ortho(2));
         g = @(z) dir_ortho' * [gx(z); gy(z)];
         
 %        figure(1);     
@@ -70,15 +83,9 @@ for i = 2:steps+1
         h = Newton(G, g, 0);            %corrector
         %h = fzero(G,0);
         
-        x(i) = x(i)+ h*dir_ortho(1);
-        y(i) = y(i)+ h*dir_ortho(2);
+        xr = xr+ h*dir_ortho(1);
+        yr = yr+ h*dir_ortho(2);
 %        figure(2);
 %        plot(x(1:i-1), y(1:i-1));
-             
-        lastphi = phi;
-        lastchi = chi;
     end
 end
-
-end
-
