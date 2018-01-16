@@ -58,20 +58,21 @@ for i = 2:steps+1
         G = @(z) F(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
         gx = @(z) dFx(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
         gy = @(z) dFy(x(i)+z*dir_ortho(1), y(i)+z*dir_ortho(2));
-        g = @(z) dir_ortho' * [dir_ortho(1)*gx(z); dir_ortho(2)^2*gy(z)];
-   figure(1);     
-    l = linspace(-0.5,0.5,10000);
-
-    plot(l, G(l),l,gx(l),l,gy(l),l,g(l));
-    legend('G','gx', 'gy', 'g')
+        g = @(z) dir_ortho' * [gx(z); gy(z)];
+        
+%        figure(1);     
+%        l = linspace(-0.5,0.5,10000);
+%        plot(l, G(l),l,gx(l),l,gy(l),l,g(l));
+%        legend('G','gx', 'gy', 'g')
     
     
         h = Newton(G, g, 0);            %corrector
+        %h = fzero(G,0);
         
         x(i) = x(i)+ h*dir_ortho(1);
         y(i) = y(i)+ h*dir_ortho(2);
-    figure(2);
-    plot(x(1:i-1), y(1:i-1));
+%        figure(2);
+%        plot(x(1:i-1), y(1:i-1));
              
         lastphi = phi;
     end
