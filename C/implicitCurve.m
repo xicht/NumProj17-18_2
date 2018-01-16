@@ -1,4 +1,4 @@
-function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, steps, stepWidth )
+function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, curvelen, stepWidth )
 %implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0 und
 %xi=x0+stepWidth*i mit i aus 0 bis steps
 %
@@ -10,26 +10,30 @@ function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, steps, stepWidth )
 
 assert(isZero(F(x0, y0)));
 
+steps = ceil(curvelen/stepWidth);
 x = zeros(1,steps+1);
 y = zeros(1,steps+1);
 y(1) = y0;
 x(1) = x0;
 lastphi = 0;
 lastchi = 0;
+lengthsum = 0;
+i = 1;
 
-for i = 2:steps+1
-    
-    [ xr, yr, phi, chi ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidth );
+while(lengthsum < curvelen)
+    i = i+1;
+    [ xr, yr, phi, chi, length ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidth );
     x(i) = xr;
     y(i) = yr;
     lastphi = phi;
     lastchi = chi;
+    lengthsum = lengthsum +length;
 end
 
 end
 
 
-function [ xr, yr, phi, chi ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidth )
+function [ xr, yr, phi, chi, length ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidth )
     dy = dFy(x(i-1), y(i-1));
     dx = dFx(x(i-1), y(i-1));
     
@@ -42,6 +46,7 @@ function [ xr, yr, phi, chi ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidt
         yr = Newton(G, g, yr);            %corrector
         lastchi = 0;
         lastphi = pi/2;
+        length = stepWidth;
     else
         phi = atan(dy/dx); %richtungsableitung maximieren
         chi = phi - pi/2; %minimale richtungsableitung, orthogonal zu phi
@@ -85,6 +90,7 @@ function [ xr, yr, phi, chi ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidt
         
         xr = xr+ h*dir_ortho(1);
         yr = yr+ h*dir_ortho(2);
+        length = stepWidth;
 %        figure(2);
 %        plot(x(1:i-1), y(1:i-1));
     end
