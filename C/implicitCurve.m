@@ -15,6 +15,7 @@ y = zeros(1,steps+1);
 y(1) = y0;
 x(1) = x0;
 lastphi = 0;
+lastchi = 0;
 
 for i = 2:steps+1
     dy = dFy(x(i-1), y(i-1));
@@ -75,6 +76,7 @@ for i = 2:steps+1
 %        plot(x(1:i-1), y(1:i-1));
              
         lastphi = phi;
+        lastchi = chi;
     end
 end
 
