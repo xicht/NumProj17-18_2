@@ -54,6 +54,16 @@
 \newcommand{\T}{\mathsf{T}}
 
 
+%sonstiges zeug
+\renewcommand{\subset}{\subseteq}
+\renewcommand{\supset}{\supseteq}
+\renewcommand{\epsilon}{\varepsilon}
+
+%markos
+\newcommand{\diff}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\secdiff}[2]{\frac{\partial^2 #1}{\partial^2 #2}}
+\newcommand{\diffdiff}[3]{\frac{\partial^2 #1}{\partial #2 \partial #3}}
+
 \begin{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,6 +124,43 @@
 
 
 \section{Grundlagen}
-Die Grundlage für die folgenden Überlegung ist der Hauptsatz über implizite Funktionen im Spezialfall von Funktionen $F: \R \times \R \to \R$. 
+Die Grundlage für die folgenden Überlegung ist der Hauptsatz über implizite Funktionen im Spezialfall von Funktionen $F: A \times B \to \R$, wobei $A$ und $B$ der Einfachheit halber offene Intervalle seien.
+
+\textbf{Satz:} Seien $a<b$ sowie $c<d \in \R$ und $F : (a,b) \times (c,d) \to \R$ stetig differenzierbar. Seien $x_0 \in (a,b)$ und $y_0 \in (c,d)$, sodass $F(x_0,y_0)=0$ und $\diff{F}{y}(x_0,y_0) \neq 0$. 
+
+Dann existieren $a_0,b_0 \in \R$ mit $a<a_0<x_0<b_0<b$ und eine stetig differenzierbare Funktion $f : (a_0,b_0) \to \R$ mit $f(x_0)=y_0$, sodass 
+\[
+\forall x \in (a_0,b_0) : F(x,f(x))=0
+\]
+und
+\begin{align}\label{eq:fstrich}
+\forall x \in (a_0,b_0) :  f'(x) = - \frac{\diff{F}{x}(x,f(x))}{\diff{F}{y}(x,f(x))}.
+\end{align}
+
+\textbf{Beweis:} Unter den gegebenen Voraussetzungen ist der Hauptsatz über implizite Funktionen anwendbar und liefert Umgebungen $U$ von $x_0$ und $V$ von $y_0$ und eine Funktion $f: U \to V$ mit den geforderten Eigenschaften. Da $x_0$ ein innere Punkt von $U$ ist, enthält $U$ ein Intervall $(a_0,b_0)$ mit den geforderten Eigenschaften.
+
+Die Umgebung $V \subset \R$ in der Zielmenge von $f$ kann durch ganz $\R$ ersetzt werden, da wir nur behauptet haben, dass $y=f(x)$ eine Lösung von $F(x,\:\cdot \:)=0$ ist, allerdings nicht dass diese eindeutig ist. \hfill
+$\blacksquare$
+
+\textbf{Satz:} Sei unter den Vorraussetzungen des vorherigen Satz $F$ zwei mal stetig differenzierbar.
+
+Dann ist $f \in C^2((a_0,b_0))$ mit $f''(x) = $
+\[
+\frac{ \!-\secdiff{F}{x}(x,f(x)) \left( \diff{F}{y}(x,f(x)) \right)^2 \!\!\! +\! 2 \diffdiff{F}{x}{y}(x,f(x))\diff{F}{x}(x,f(x))\diff{F}{y}(x,f(x)) \!-\! \secdiff{F}{y}(x,f(x)) \left( \diff{F}{x}(x,f(x)) \right)^2  }{ \left(\diff{F}{y}(x,f(x))\right)^3 }.
+\]
+
+Außerdem gilt:
+\[
+\forall x \in (a_0,b_0) \exists \xi \in (x_0,x)\cup (x,x_0) : f(x) = y_0 + \frac{\diff{F}{x}(x_0,y_0)}{\diff{F}{y}(x_0,y_0)}(x-x_0) + \frac{f''(\xi)}{2}(x-x_0)^2.
+\]
+
+\textbf{Beweis:} Aus $F \in C^2$ folgt mit der Kettenregel und Einsetzen der Darstellung \eqref{eq:fstrich}für $f'$:
+\begin{align*}
+\frac{d}{dx}\left( \diff{F}{x}(x,f(x))  \right) &= \left( \secdiff{F}{x}(x,f(x)) , \diffdiff{F}{x}{y}(x,f(x))  \right) \cdot \binom{1}{f'(x)} \\
+&= \secdiff{F}{x}(x,f(x)) - \diffdiff{F}{x}{y}(x,f(x)) \frac{\diff{F}{x}(x,f(x))}{\diff{F}{y}(x,f(x))}.
+\end{align*}
+Für $\frac{d}{dx}\left( \diff{F}{y}(x,f(x))  \right)$ erhält man analog eine ähnliche Darstellung. Damit kann man den Ausdruck \eqref{eq:fstrich} mithilfe der Quotientenregel differenzieren und erhält durch Erweitern mit $\diff{F}{y}(x,f(x))$ obige Darstellung für $f''$.
+
+Die zweite Aussage folgt aus dem Satz von Taylor. \hfill $\blacksquare$
 
 \end{document}

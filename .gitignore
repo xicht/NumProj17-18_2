@@ -8,3 +8,9 @@ notes/notes\.log
 notes/notes\.synctex\.gz
 
 test/test_MAS\.bak
+
+*.aux
+
+*.log
+
+ausarbeitung/proj2\.synctex\.gz
