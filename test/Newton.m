@@ -24,6 +24,9 @@ assert(abs(f(x2)) ~= Inf);
 if f(x2) ==0
     Ableitung=f(xx)
     Funktion=F(xx)
+    ff=diff(F(xx),xx)
+    g=Ableitung-ff
+    g(1)
     o = 3;
     plot(linspace(0,o,1000),F(linspace(0,o,1000)),linspace(0,o,1000),f(linspace(0,o,1000)));
 end
