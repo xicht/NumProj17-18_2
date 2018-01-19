@@ -219,6 +219,31 @@ Die zweite Aussage folgt aus dem Satz von Taylor und der Tatsache, dass $f''$ al
 %ich tu mal so als würde die in den anderen Aufgaben hinreichend behandelt.
 
 \section{Implementierung von Niveaulinien}
+Die bisherigen Algorithmen finden Paare $(x_i,y_i)_{i=1,\dots N}$, sodass für $F(x_i,y_i)=0$ für $i=1,\dots, N$ und stellen damit die Nullstellenmenge von $F$ (oder nur einen Teil davon) näherungsweise graphisch dar. 
+
+Im Folgenden sind $c_1,\dots, c_k \in \R$ gegeben und es sollen für $j=1,\dots,k$ die Teilmengen von $\{ (x,y) \in \R^2 : F(x,y)=c_j \}$ graphisch dargestellt werden.
+
+Grundsätzlich ist dieses Problem einfach auf die vorherigen Algorithmen zurückzuführen, indem man die Nullstellenmengen der Funktionen $F_j(x,y) := F(x,y) -c_j$ graphisch darstellt.
+
+Bei den vorherigen Algorithmen musste ein Startwert $(x_0,y_0) \in \R^2$ übergeben werden, für den gilt $F(x_0,y_0)=0$, also müsste in diesem Fall $k$ Startwerte $(x_j,y_j) \in \R^2$ übergeben werden, sodass
+\[
+F(x_j,y_j) = c_j \qquad j=1,\dots k.
+\]
+
+Dies stellt sich in der Praxis als sehr benutzerunfreundlich heraus, da die Gleichungen $F(x_j,y_j)=c_j$ im Allgemeinen nicht einfach zu lösen sind. 
+
+Aus diesem Grund wurde ein Algorithmus implementiert, der in einem gegebenen Intervall $[a,b]\times[c,d] \subset \R^2$ entsprechende $(x_j,y_j)$ sucht und anschließend für $j=1,\dots, k$ einen der vorherigen Algorithmen mit der Funktion $F_j$ und den Startwerten $(x_j,y_j)$ aufruft. 
+
+Der wesentliche Schritt ist also, nach Möglichkeit Nullstellen von $F_j$ in $[a,b] \times [c,d]$ zu finden. Das Newton-Verfahren im $\R^n$ steht hier nicht zur Verfügung, da nur es für Funktionen $G: \R^n \to \R^n$ anwendbar ist. Wegen der Regularitätsforderung  an die Jacobi-Matrix von $G$, ist es auch nicht möglich etwa $G(x,y) : = \binom{F(x,y)}{0}$ oder $G(x,y) : = \binom{F(x,y)}{F(x,y)}$ zu setzen und damit das Newton-Verfahren zu verwenden.
+
+Es wird daher folgende Strategie verwendet, die in den unseren Tests auch immer die Nullstellen gefunden hat:
+\begin{itemize}
+	\item Sei $m:= \binom{m_x}{m_y} := \binom{(a+b)/2}{(c+d)/2}$. Berechne $F(m)$. Falls $F(m)=0$ sind wir fertig, falls $F(m)<0$ betrachte $-F$. Wir können also im folgenden annehmen $F(m)>0$.
+	\item Werte mithilfe geeigneter Schleifen $F$ an verschiedenen $(x,y) \in [a,b]\times [c,d]$ aus, bis $(x,y)$ mit $F(x,y)\le 0$ gefunden wird. Tritt dies nicht ein, bricht der Algorithmus an der Stelle ohne Ergebnis ab. Ist $F(x,y)=0$ sind wir fertig. Wir können also im Folgenden annehmen, dass $F(x,y)<0$ ist.
+	\item Sei nun $\Psi : [0,1] \to \R^2 : t \mapsto \binom{m_x}{m_y} + t \binom{x-m_x}{y-m_y}$. Dann ist $ G:= \Psi \circ F : [0,1] \to \R$ stetig mit $G(0)>0$ und $G(1)<0$. Mithilfe des Bisektionsverfahrens kann man eine Nullstelle $t_0$ von $G$ finden.
+	\item Dann ist $\Psi(t_0) \in [a,b] \times [c,d]$ eine Nullstelle von $F$.
+\end{itemize} 
+
 \subsection{Tests}
 
 \section{Anhang: Code-Listings}
