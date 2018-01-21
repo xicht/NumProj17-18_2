@@ -178,7 +178,7 @@ end
 %wenn wir bis daher kommen waren wir erfolglos
 x0y0=[0,0];
 err=1; 
-warning('jetzt keine NSt gefunden');
+%warning('jetzt keine NSt gefunden');
 
 end
 
