@@ -1,4 +1,4 @@
-function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt( F, dFx, dFy, x0, y0, length, maxStepWidth, minStepWidth )
+function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt1( F, dFx, dFy, x0, y0, length, maxStepWidth, minStepWidth )
 % implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0, 
 % gibt weiters zurueck: polygon_length: laenge des Polygonzuges , 
 % steps: anzahl der berechnungsschritte, z: kruemmungsschaetzer

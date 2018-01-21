@@ -212,6 +212,17 @@ Die zweite Aussage folgt aus dem Satz von Taylor und der Tatsache, dass $f''$ al
 \subsection{Tests}
 
 \section{Implementierung von adaptiver Schrittweite}
+Der Einfachheit halber werden mögliche Strategien für adaptive Schrittweite zuerst an der Implementierung aus Aufgabe a getestet, da das Koordinatensystem dort noch fest ist. Dann werden sie, falls möglich und sinnvoll, auf den allgemeinen Fall ausgeweitet.
+\subsection{Mögliche Strategien für Aufgabe a}
+Es ergeben sich folgende mögliche Strategien
+\begin{enumerate}
+	\item Versuchen, die Krümmung von $f$ aus den letzten Punkten zu schätzen, und die Schrittweite bei großer Krümmung zu reduzieren
+	\item Die Krümmung im letzten Punkt explizit berechnen und die Schrittweite daran anpassen
+	\item Die Differenz von Prediktor und Korrektor betrachten und bei größerer Differenz die Schrittweite reduzieren
+	\item Die Anzahl der Schritte bis das Newton-Verfahren konvergiert
+\end{enumerate}
+
+
 %vielleicht will man das auch in mit A und mit C aufteilen
 \subsection{Tests}
 
