@@ -11,6 +11,8 @@ function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt2( F, dFx, dFy, 
 % Anzahl der zu berechnenten Wertepaare
 % Schrittweite an der x-Achse.
 
+% SCHRITTWEITE-STRATEGIE: GROESSE DES KORREKTORSCHRITTES
+
 assert(isZero(F(x0, y0)));
 
 x = zeros(1,100+1);
@@ -51,8 +53,8 @@ while true %quasi eine for-schleife der art for k=0:infinity
                 currStepWidth = minStepWidth;
             end
         end
-        if currStepWidth < minsw
-        minsw=currStepWidth;
+        if currStepWidth < minsw && i>3
+            minsw=currStepWidth;
         end;
         x(i) = x(i-1) +currStepWidth;
         
