@@ -16,7 +16,7 @@ b=-0.4;
 c=-3;
 d=3;
 
-[X, Y] = nivlines3(G, dGx, dGy, Z, a, b, c, d, Steps, StepWidth); 
+[X, Y] = nivlines4(G, dGx, dGy, Z, a, b, c, d, Steps, StepWidth); 
 
 figure(1)
 plot(X{1},Y{1})

@@ -31,7 +31,7 @@ mx = (a+b)/2;
 my = (c+d)/2;
 
 
-%finde Funktionswert kleiner null, der nach moeglichkeit nahe an mx,my ist
+%finde Funktionswert kleiner null
 [x0y0,err]=findNegVal(F,a,b,c,d,4,20);
 
 if err==1

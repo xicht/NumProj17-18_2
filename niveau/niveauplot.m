@@ -20,6 +20,10 @@ end
 Zplot = (Z-min(Z))./(max(Z)-min(Z));  % jetzt sind es Werte im Invervall [0,1]
 Zplot = floor(1+Zplot*63);  %integers von 1 bis 64
 
+if min(Z)==max(Z)
+    Zplot=ones(length(Z),1),
+end
+
 figure('DefaultAxesFontSize',fontsize);
 figure(1)
 colormap jet
