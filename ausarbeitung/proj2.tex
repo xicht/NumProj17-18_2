@@ -124,12 +124,12 @@
     \vskip0.75cm
     unter der Anleitung von
     \vskip0.75cm
-    {\Large\bfseries\color{change}Name des Betreuers}\\[1ex]
+    {\Large\bfseries Prof. Dr. Lothar Nannen}\\[1ex]
     \vskip 0.5cm
     durch
     \vskip 0.5cm
-    {\color{change} \Large\bfseries Markus Rinke }\\[1ex]
-    Matrikelnummer: { \color{change} 1402581}\\[1ex]
+    {\Large\bfseries Lukas Moser }\\[1ex]
+    Matrikelnummer: {1607333}\\[1ex]
     {\Large\bfseries Stefan Schrott}\\[1ex]
     Matrikelnummer: {1607388}\\[1ex]
    
@@ -197,8 +197,13 @@ F체r $\frac{d}{dx}\left( \diff{F}{y}(x,f(x))  \right)$ erh채lt man analog eine �
 
 Die zweite Aussage folgt aus dem Satz von Taylor und der Tatsache, dass $f''$ als Komposition stetiger Funktionen stetig ist. \hfill $\blacksquare$
 
-\section{Implementierung von Aufgabe a}
-
+\section{Aufgabe a}
+Das Ziel dieser Aufgabenstellung ist es den Graphen, der durch die Nullstellenmenge einer Funktion, numerisch anzun채hern. Im ersten Schritt wollen wir dazu einem Gitter $x_j = x_0 + j*h, j \in \left\lbrace1...n\right\rbrace $ entlang x folgen. 
+Dazu soll die Funktion $F$ auf der gesamten betrachteten Menge die Bedingungen des Hauptsatzes 체ber implizite Funktionen erf체llen und $F(x_0,y_0)=0$ sein. Damit wissen wir, dass $\forall j \in \left\lbrace1...n\right\rbrace: F(x_j,f(x_j)=0)$ gilt. Um $y_n = f(x_n)$ zu berechnen betrachte man mittels Mittelwertsatz
+\[
+f(x_{n+1})=f(x_n)+f'(x_n)*h+r_n, \left|r_n\right|\leq \sup\limits_{a,b \in \left[x_n,x_{n+1}\right]}\left|{f'(a)-f'(b)}\right|*h.
+\]
+Demnach ist f체r ausreichend kleine Schrittweite das Restglied $r_n$ ausreichend klein, so dass die Nullstelle f체r $F(x_n+1,.)$ mittels Newtonverfahren von $f(x_n)+f'(x_n)*h$ aus gefunden werden kann.
 \subsection{Tests}
 
 \section{Implementierung von Aufgabe b Version 1}
@@ -209,6 +214,10 @@ Die zweite Aussage folgt aus dem Satz von Taylor und der Tatsache, dass $f''$ al
 \section{Implementierung von Aufgabe b Version 2}
 %das mit beliebiger Richtung
 
+Um $y_n = f(x_n)$ zu berechnen betrachte man mittels Taylorformel.
+\[
+f(x_{n+1})=f(x_n)+f'(x_n)*h+r, \left|r\right|\leq \left|\sup\limits_{x \in \left[x_n,x_{n+1}\right]}\frac{f''(x)}{2}\right|*h^2
+\]
 \subsection{Tests}
 
 \section{Implementierung von adaptiver Schrittweite}
