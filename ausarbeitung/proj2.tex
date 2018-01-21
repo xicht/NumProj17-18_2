@@ -188,7 +188,7 @@ Außerdem gilt:
 \forall x \in (a_0,b_0) \exists \xi \in (x_0,x)\cup (x,x_0) : f(x) = y_0 + \frac{\diff{F}{x}(x_0,y_0)}{\diff{F}{y}(x_0,y_0)}(x-x_0) + \frac{f''(\xi)}{2}(x-x_0)^2.
 \]
 
-\textbf{Beweis:} Aus $F \in C^2$ folgt mit der Kettenregel und Einsetzen der Darstellung \eqref{eq:fstrich}für $f'$:
+\textbf{Beweis:} Aus $F \in C^2$ folgt mit der Kettenregel und Einsetzen der Darstellung \eqref{eq:fstrich} für $f'$:
 \begin{align*}
 \frac{d}{dx}\left( \diff{F}{x}(x,f(x))  \right) &= \left( \secdiff{F}{x}(x,f(x)) , \diffdiff{F}{x}{y}(x,f(x))  \right) \cdot \binom{1}{f'(x)} \\
 &= \secdiff{F}{x}(x,f(x)) - \diffdiff{F}{x}{y}(x,f(x)) \frac{\diff{F}{x}(x,f(x))}{\diff{F}{y}(x,f(x))}.
@@ -219,6 +219,8 @@ Die zweite Aussage folgt aus dem Satz von Taylor und der Tatsache, dass $f''$ al
 %ich tu mal so als würde die in den anderen Aufgaben hinreichend behandelt.
 
 \section{Implementierung von Niveaulinien}
+\subsection{Problemstellung und Idee der Implementierung}
+
 Die bisherigen Algorithmen finden Paare $(x_i,y_i)_{i=1,\dots N}$, sodass für $F(x_i,y_i)=0$ für $i=1,\dots, N$ und stellen damit die Nullstellenmenge von $F$ (oder nur einen Teil davon) näherungsweise graphisch dar. 
 
 Im Folgenden sind $c_1,\dots, c_k \in \R$ gegeben und es sollen für $j=1,\dots,k$ die Teilmengen von $\{ (x,y) \in \R^2 : F(x,y)=c_j \}$ graphisch dargestellt werden.
@@ -236,18 +238,61 @@ Aus diesem Grund wurde ein Algorithmus implementiert, der in einem gegebenen Int
 
 Der wesentliche Schritt ist also, nach Möglichkeit Nullstellen von $F_j$ in $[a,b] \times [c,d]$ zu finden. Das Newton-Verfahren im $\R^n$ steht hier nicht zur Verfügung, da nur es für Funktionen $G: \R^n \to \R^n$ anwendbar ist. Wegen der Regularitätsforderung  an die Jacobi-Matrix von $G$, ist es auch nicht möglich etwa $G(x,y) : = \binom{F(x,y)}{0}$ oder $G(x,y) : = \binom{F(x,y)}{F(x,y)}$ zu setzen und damit das Newton-Verfahren zu verwenden.
 
-Es wird daher folgende Strategie verwendet, die in den unseren Tests auch immer die Nullstellen gefunden hat:
+Es wird daher folgende Strategie verwendet:
 \begin{itemize}
 	\item Sei $m:= \binom{m_x}{m_y} := \binom{(a+b)/2}{(c+d)/2}$. Berechne $F(m)$. Falls $F(m)=0$ sind wir fertig, falls $F(m)<0$ betrachte $-F$. Wir können also im folgenden annehmen $F(m)>0$.
 	\item Werte mithilfe geeigneter Schleifen $F$ an verschiedenen $(x,y) \in [a,b]\times [c,d]$ aus, bis $(x,y)$ mit $F(x,y)\le 0$ gefunden wird. Tritt dies nicht ein, bricht der Algorithmus an der Stelle ohne Ergebnis ab. Ist $F(x,y)=0$ sind wir fertig. Wir können also im Folgenden annehmen, dass $F(x,y)<0$ ist.
 	\item Sei nun $\Psi : [0,1] \to \R^2 : t \mapsto \binom{m_x}{m_y} + t \binom{x-m_x}{y-m_y}$. Dann ist $ G:= \Psi \circ F : [0,1] \to \R$ stetig mit $G(0)>0$ und $G(1)<0$. Mithilfe des Bisektionsverfahrens kann man eine Nullstelle $t_0$ von $G$ finden.
 	\item Dann ist $\Psi(t_0) \in [a,b] \times [c,d]$ eine Nullstelle von $F$.
 \end{itemize} 
+Diese Strategie hat in unseren Tests immer die Nullstellen gefunden. Nullstellen die gleichzeitig Extremstellen der Funktion $F$ sind, können damit nur durch großen Zufall gefunden werden, da die Funktion bei ihnen keinen Vorzeichenwechsel macht. Das ist kein großer Mangel, da diese Nullstellen aber unterinteressant sind, denn dort ist $\diff{F}{x}=0$ und $\diff{F}{y}=0$, was sie als Startwerte eher unbrauchbar macht.
+
+\subsection{Details der Implementierung}
+
+Es wurde also eine Funktionen der Art
+\begin{verbatim}
+nivlines (F, dFx, dFy, Z, A, B, C, D, Steps, StepWidth)
+\end{verbatim}
+%hier müsste normal stehen was F dFx dFy sind, das wird aber wohl schon oft genung gestanden sein
+implementiert. Dabei sind:
+\begin{itemize}
+	\item \verb|Z| ein Vektor ist, der die Funktionswerte enthält, zu denen Niveaulinien geplottet werden sollen. Bezeichne $k$ im Folgenden die Länge von \verb|Z|).
+	\item \verb|A|, \verb|B|, \verb|C|, \verb|D| jeweils Vektoren der Länge $k$, sodass ein Startwert für die Niveaulinie zu \verb|Z(j)| im Intervall [\verb|A(j)|, \verb|B(j)|]$\times$[ \verb|C(j)|, \verb|D(j)|] gesucht wird. Alternativ können auch Skalare übergeben werden, die wie Vektoren mit konstanten Einträgen behandelt werden.
+	\item  \verb|Steps| und \verb|StepWidth| sind ebenfalls Vektoren der Länge $k$ oder Skalare, die die Schrittanzahl bzw. Schrittweite übergeben.
+\end{itemize}
+
+Die Implementierung der Funktion sieht dann im Wesentlichen (Assertions etc. wurden im Listing weggelassen) so aus:
+
+\lstinputlisting[firstline=1, lastline=1000,caption=Ich bin ein Beispiel-Lisitng]{code/nivlines4.m}
+
+%das sind jetzt sehr informatik / matlab-syntax-lastige dinge, die man auch streichen kann
+%aber falls man den code wo einbindet sollte man es vlt erwähnt haben, damit die leute nicht
+%über unbekannte syntax stolpern
+
+
+
+
+
+Da Niveaulinien zu unterschiedlichen Funktionswerten sehr unterschiedlich lang sein können, ist es nicht sinnvoll, alle das die $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveaulinien in Matrix $X \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
 
 \subsection{Tests}
+Sei %(x.^2+y.^2+10^-2).^-1 + ((x-0.5).^2+y.^2+10^-2).^-1
+\[
+F(x,y) := \frac{1}{x^2+y^2+10^{-2}} + \frac{1}{(x-0.5)^2+y^2+10^{-2}}
+\]
+
+Sei $Z:= (10,15,20,25,800/29,30,40,60,80,30,40,60,80)$ der Vektor der Funktionswerte, für die Niveau-Linien geplottet werden sollen. Für alle Werte wurden Startpunkte im Intervall $[0,1/4]\times[0,1]$ gesucht, für jene Werte, die im Vektor $Z$ doppelt vorkommen, wurde zusätzlich im Intervall $[1/2,3/4]\times[0,1]$ nach einem Startwert gesucht. Die Motivation für die Auswahl des Wertes $800/29$ ist, dass $F(1/4,0)=800/29$ und $DF(1/4,0)=(0,0)$.
+
+Die Schrittweite betrug $2\cdot 10^{-3}$ die Schrittanzahl 2000 für die ersten fünf Niveaulinien bzw. 500 für die Restlichen.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[trim = 41mm 0mm 35mm 0mm, clip, width=\linewidth]{plots/niveau/test5_}
+
+\end{figure}
 
 \section{Anhang: Code-Listings}
-\lstinputlisting[firstline=8, lastline=45,caption=Ich bin ein Beispiel-Lisitng]{code/blabla.m}
+\lstinputlisting[firstline=1, lastline=1000,caption=Implementierung der Nullstellensuche im $\R^2$]{code/findZero.m}
 %man wird wohl nur einzelne Ausschnitte im Fließtext haben wollen
 
 
