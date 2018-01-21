@@ -31,7 +31,7 @@ mx = (a+b)/2;
 my = (c+d)/2;
 
 
-%finde Funktionswert kleiner null, der nach möglichkeit nahe an mx,my ist
+%finde Funktionswert kleiner null, der nach moeglichkeit nahe an mx,my ist
 [x0y0,err]=findNegVal(F,a,b,c,d,4,20);
 
 if err==1
@@ -53,7 +53,7 @@ G = @(t) F(Psi1(t),Psi2(t));
 %finde Nullstelle von G in [0,1]
 t0 = bisection(G,0,1);
 
-%transfomiere Nullstelle in [0,1] zurück auf NSt in R^2
+%transfomiere Nullstelle in [0,1] zurueck auf NSt in R^2
 X0Y0 = [mx+t0*(x0y0(1)-mx),my+t0*(x0y0(2)-my)];
 
 end

@@ -3,10 +3,10 @@ function [ X ,Y ] =nivlines4 (F, dFx, dFy, Z, A, B, C, D, Steps, StepWidth)
 % mit unterschiedlicher Schrittweite- und Anzahl.
 
 %Die Startpunkte werden im Intervall [A(j),B(j)]x[C(j),D(j)] gesucht, wobei
-%entweder Vektoren A aus R^(1 x k) oder Skalare a übergeben werden können,
-%wobei Skalar so behandelt werden, dass A(j)=a für alle j.
+%entweder Vektoren A aus R^(1 x k) oder Skalare a uebergeben werden koennen,
+%wobei Skalar so behandelt werden, dass A(j)=a fuer alle j.
 
-% X und Y sind cell-Arrays der Länge k, wobei für alle j
+% X und Y sind cell-Arrays der Laenge k, wobei fuer alle j
 % X{j} bzw Y{j} Vektoren aus R^(1 x Steps(j)) sind, die die zu plottenden
 % Punkte enthalten.
 

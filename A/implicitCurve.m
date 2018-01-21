@@ -2,7 +2,7 @@ function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, steps, stepWidth )
 %implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0 und
 %xi=x0+stepWidth*i mit i aus 0 bis steps
 %
-% F Funktion mit 2 veränderlichen, dF/dy ~=0 in allen relevanten Bereichen
+% F Funktion mit 2 veraenderlichen, dF/dy ~=0 in allen relevanten Bereichen
 % dFx und dFy sind die Ableitungen von F, jeweils nach x und y
 % x0,y0 Startpunkt, es muss F(x0,y0) == 0 gelten
 % Anzahl der zu berechnenten Wertepaare

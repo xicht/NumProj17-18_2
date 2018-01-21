@@ -6,8 +6,8 @@ function [ X ,Y ] =nivlines3 (F, dFx, dFy, Z, a, b, c, d, Steps, StepWidth)
 % X und Y sind Matrizen aus R^(k x steps) wobei deren Zeilenvektoren
 % X(j,:) bzw Y(j,:) genau die zu plotenden Graphen sind. (j=1,..,k)
 %
-% Z aus R^(1 x k) sind Funktionswerte für Niveaulinien, [a,b]x[c,d] ist
-% der Suchbereich für Startpunkte der Niveaulinien 
+% Z aus R^(1 x k) sind Funktionswerte fuer Niveaulinien, [a,b]x[c,d] ist
+% der Suchbereich fuer Startpunkte der Niveaulinien 
 
 k = length(Z);
 assert(k==length(Z));

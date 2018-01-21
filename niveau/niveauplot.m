@@ -2,12 +2,12 @@ function niveauplot (F, dFx, dFy, Z, A, B, C, D, Steps, StepWidth,fontsize,logco
 % Plottet Niveaulinien von F zu den Werten Z(j)
 
 %Die Startpunkte werden im Intervall [A(j),B(j)]x[C(j),D(j)] gesucht, wobei
-%entweder Vektoren A aus R^(1 x k) oder Skalare a übergeben werden können,
-%wobei Skalar so behandelt werden, dass A(j)=a für alle j.
+%entweder Vektoren A aus R^(1 x k) oder Skalare a uebergeben werden koennen,
+%wobei Skalar so behandelt werden, dass A(j)=a fuer alle j.
 
-% logcolor sorgt für Farbauswahl die nicht linear, sondern logarithmisch
-% vom Funktionswert abhängt (die Option ist genau dann aktiv, wenn der 
-% Parameter übergeben wird)
+% logcolor sorgt fuer Farbauswahl die nicht linear, sondern logarithmisch
+% vom Funktionswert abhaengt (die Option ist genau dann aktiv, wenn der 
+% Parameter uebergeben wird)
 
 [X, Y] = nivlines4(F, dFx, dFy, Z, A, B, C, D, Steps, StepWidth); 
 CAP=string(Z);

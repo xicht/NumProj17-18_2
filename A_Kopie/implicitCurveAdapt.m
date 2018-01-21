@@ -1,11 +1,11 @@
 function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt( F, dFx, dFy, x0, y0, length, maxStepWidth, minStepWidth )
 % implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0, 
-% gibt weiters zurück: polygon_length: länge des Polygonzuges , 
-% steps: anzahl der berechnungsschritte, z: krümmungsschätzer
+% gibt weiters zurueck: polygon_length: laenge des Polygonzuges , 
+% steps: anzahl der berechnungsschritte, z: kruemmungsschaetzer
 %
-% eingabe parameter length für gewünschte polygonlänge
+% eingabe parameter length fuer gewuenschte polygonlaenge
 %
-% F Funktion mit 2 veränderlichen, dF/dy ~=0 in allen relevanten Bereichen
+% F Funktion mit 2 veraenderlichen, dF/dy ~=0 in allen relevanten Bereichen
 % dFx und dFy sind die Ableitungen von F, jeweils nach x und y
 % x0,y0 Startpunkt, es muss F(x0,y0) == 0 gelten
 % Anzahl der zu berechnenten Wertepaare
@@ -64,20 +64,20 @@ while true %quasi eine for-schleife der art for k=0:infinity
         g = @(z)dFy(x(i), z);
         y(i) = Newton(G, g, y(i));            %corrector    
         
-        if i>2  %krümmungsschätzer, vlt weißt du wie man eine codezeile auf 2 textzeilen aufteilt...
+        if i>2  %kruemmungsschaetzer, vlt weisst du wie man eine codezeile auf 2 textzeilen aufteilt...
             z(i) = 2* ( (y(i-2)-y(i-1))*(x(i-1)-x(i)) + (y(i-1)-y(i))*(x(i-1)-x(i-2))  ) /(x(i-2)-x(i-1)) / (x(i-1)-x(i))  / (x(i-2)-x(i))  ;
         end
         
         polygon_length = polygon_length + sqrt((x(i)-x(i-1))^2+(y(i)-y(i-1))^2);
         
         if polygon_length >= length
-            steps=i; %so viele wurden bisher benötigt
+            steps=i; %so viele wurden bisher benoetigt
             break;
         end
     end
         
     if polygon_length >= length
-        %nicht benötigten speicher freigeben
+        %nicht benoetigten speicher freigeben
         x=x(1:steps);
         y=y(1:steps);
         z=z(1:steps);
