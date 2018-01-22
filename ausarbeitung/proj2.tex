@@ -63,6 +63,7 @@
 \newcommand{\diff}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\secdiff}[2]{\frac{\partial^2 #1}{\partial^2 #2}}
 \newcommand{\diffdiff}[3]{\frac{\partial^2 #1}{\partial #2 \partial #3}}
+\newcommand{\norm}[2]{\left\| #1 \right\|_{#2}}
 
 %CODE LISTINGS
 \usepackage{xcolor}
@@ -97,7 +98,8 @@
 	tabsize=2,	                   % sets default tabsize to 2 spaces
 	title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
 }
-
+\newcounter{satz}
+\setcounter{satz}{1}
 
 \begin{document}
 
@@ -160,7 +162,7 @@
 \section{Grundlagen}
 Die Grundlage für die folgenden Überlegung ist der Hauptsatz über implizite Funktionen im Spezialfall von Funktionen $F: A \times B \to \R$, wobei $A$ und $B$ der Einfachheit halber offene Intervalle seien.
 
-\textbf{Satz:} Seien $a<b$ sowie $c<d \in \R$ und $F : (a,b) \times (c,d) \to \R$ stetig differenzierbar. Seien $x_0 \in (a,b)$ und $y_0 \in (c,d)$, sodass $F(x_0,y_0)=0$ und $\diff{F}{y}(x_0,y_0) \neq 0$. 
+\textbf{Satz \thesatz\refstepcounter{satz}:} Seien $a<b$ sowie $c<d \in \R$ und $F : (a,b) \times (c,d) \to \R$ stetig differenzierbar. Seien $x_0 \in (a,b)$ und $y_0 \in (c,d)$, sodass $F(x_0,y_0)=0$ und $\diff{F}{y}(x_0,y_0) \neq 0$. 
 
 Dann existieren $a_0,b_0 \in \R$ mit $a<a_0<x_0<b_0<b$ und eine stetig differenzierbare Funktion $f : (a_0,b_0) \to \R$ mit $f(x_0)=y_0$, sodass 
 \[
@@ -176,7 +178,7 @@ und
 Die Umgebung $V \subset \R$ in der Zielmenge von $f$ kann durch ganz $\R$ ersetzt werden, da wir nur behauptet haben, dass $y=f(x)$ eine Lösung von $F(x,\:\cdot \:)=0$ ist, allerdings nicht dass diese eindeutig ist. \hfill
 $\blacksquare$
 
-\textbf{Satz:} Sei unter den Vorraussetzungen des vorherigen Satz $F$ zwei mal stetig differenzierbar.
+\textbf{Satz \thesatz\refstepcounter{satz}:} Sei unter den Vorraussetzungen des vorherigen Satz $F$ zwei mal stetig differenzierbar.
 
 Dann ist $f \in C^2((a_0,b_0))$ mit $f''(x) = $
 \[
@@ -221,16 +223,165 @@ f(x_{n+1})=f(x_n)+f'(x_n)*h+r, \left|r\right|\leq \left|\sup\limits_{x \in \left
 \subsection{Tests}
 
 \section{Implementierung von adaptiver Schrittweite}
-Der Einfachheit halber werden mögliche Strategien für adaptive Schrittweite zuerst an der Implementierung aus Aufgabe a getestet, da das Koordinatensystem dort noch fest ist. Dann werden sie, falls möglich und sinnvoll, auf den allgemeinen Fall ausgeweitet.
-\subsection{Mögliche Strategien für Aufgabe a}
-Es ergeben sich folgende mögliche Strategien
+Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzuges durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
+
+Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
 \begin{enumerate}
-	\item Versuchen, die Krümmung von $f$ aus den letzten Punkten zu schätzen, und die Schrittweite bei großer Krümmung zu reduzieren
-	\item Die Krümmung im letzten Punkt explizit berechnen und die Schrittweite daran anpassen
-	\item Die Differenz von Prediktor und Korrektor betrachten und bei größerer Differenz die Schrittweite reduzieren
-	\item Die Anzahl der Schritte bis das Newton-Verfahren konvergiert
+	\item Die Datenpunkte $(x_i,y_i)$ sollen möglichst sein.
+	\item Der Polygonzug soll die Nullstellenmenge möglichst gut approximieren.
 \end{enumerate}
 
+Die erste Problemstellung ist recht einfach zu lösen: Durch das Newton-Verfahren im Korrektor-Schritt ist $(x_i,y_i)$ extrem an einer Nullstelle -- die dabei bleibende geringe Abweichung wird auch nicht Schrittweite des Prediktors beeinflusst. Das einzige was hier zu tun ist, ist also die Schrittweite zu verkleinern, falls das Newton-Verfahren nicht konvergiert. 
+
+Die zweite Problemstellung ist die wesentlich interessanter, die im folgenden zu lösen versucht wird. Der Einfachheit halber werden mögliche Strategien für adaptive Schrittweite zuerst an der Implementierung aus Aufgabe a getestet, da das Koordinatensystem dort noch fest ist. Dann werden sie, falls möglich und sinnvoll, auf den allgemeinen Fall ausgeweitet.
+
+Wir gehen bei den Überlegungen dazu überdies davon aus, dass die Datenpunkte selbst korrekt sind bzw. dass wir deren Fehler vernachlässigen können.
+\subsection{Mögliche Strategien für Aufgabe a}\label{chap:5.1}
+Wir nehmen nun an, dass es auf $(a,b)$ eine Funktion $f$ gibt, sodass $F(x,f(x))=0$ für alle $x \in (a,b)$. 
+
+Es ergeben sich folgende mögliche Strategien:
+\begin{enumerate}
+	\item Die Krümmung von $f$  im letzten Punkt explizit berechnen
+	\item Versuchen, die Krümmung von $f$ aus den letzten Punkten zu schätzen 
+	\item Die Differenz von Prediktor und Korrektor betrachten
+\end{enumerate}
+
+
+\subsubsection{Abschätzung der Schrittweite anhand der Krümmung von $f$}\label{chap:5.1.1}
+
+ Zusätzlich dazu nehmen wir an, dass $F \in C^2((a,b))$, was nach Satz ... eine hinreichende Bedingung für $f \in C^2((a,b))$ ist. Außerdem liefert der Satz dann eine explizite Darstellung von $f''$.  
+
+Sei $x_0 \in (a,b)$ ein Startwert und $c>0$ eine vorgegebene Toleranz. Das Ziel ist es nun, ein (möglichst großes) $h \in (0,h_{max})$ zu finden, sodass die Gerade zwischen $(x_0,f(x_0))$ und $(x_0+h,f(x_0+h))$ maximal um $c$ von $f$ abweicht. Hat man so ein $h$ gefunden, kann man $x_1 := x_0+h$ setzen und von dort aus fortfahren, um insgesamt einen Polygonzug zu erhalten, für den diese Abschätzung gilt. 
+
+Bei einen einzelnen Iterationsschritt handelt es sich dabei um eine lineare Interpolationsaufgabe, da wir nach dem Korrektorschritt davon ausgehen können, dass $f(x_0)$ und $f(x_0+h)$ nahezu korrekt ist. Es geht hier also um die Frage, wie sich $f$ zwischen diesen Punkten verhält, insbesondere wie sehr es von einer Geraden durch die Punkte $(x_0,f(x_0))$ und $(x_0+h,f(x_0+h))$ abweicht.
+
+ Die Gleichung der Interpolationsgeraden $g_h$ ist gegeben durch (vgl Skriptum Bsp 3.17):
+\[
+g_h (x) = \frac{f(x_0)(x_0+h-x) + f(x_0+h)(x-x_0)}{h},
+\]
+wobei dann folgende Abschätzung gilt:
+\[
+\sup_{x \in [x_0,x_0+h]} |f(x)-g_h(x)|  \le \frac{h^2}{8} \sup_{x \in [x_0,x_0+h]} |f''(x)| \le \frac{h^2}{8} \sup_{x \in [x_0,x_0+h_{max}]} |f''(x)|.
+\]
+Es gilt:
+\[
+c = \frac{h^2}{8} \sup_{x \in [x_0,x_0+h_0]} |f''(x)| \quad \iff \quad h = \sqrt{ \frac{8c}{\sup_{x \in [x_0,x_0+h_{max}]} |f''(x)|}}.
+\]
+
+Daher gilt für $h \in (0,h_{max})$:
+\begin{align}\label{eq:absch_h}
+\quad h \le \sqrt{ \frac{8c}{\sup_{x \in [x_0,x_0+h_{max}]} |f''(x)|}} \quad \implies \quad \sup_{x \in [x_0,x_0+h]} |f(x)-g_h(x)| \le c.
+\end{align}
+
+Da das numerische Berechnen des Supremums nicht möglich ist, kann man an dieser Stelle nicht mehr so weiterarbeiten, dass obige Abschätzungen garantiert werden. In einem ersten Schritt kann man heuristisch
+\[
+h := \sqrt{\frac{8c}{|f''(x_0)| +\frac{8c}{h_{max}^2} }} \in (0,h_{max})
+\]
+wählen. Dann sind zwar keine der obigen Abschätzungen garantiert, man hat einen ersten Ansatz für adaptive Schrittweite. Zusätzlich dazu wird bei der Implementierung auch eine Mindestschrittweite vorgegeben, die nicht unterschritten werden darf. 
+
+\subsubsection{Abschätzung der Krümmung anhand dreier Punkte}\label{chap:5.1.2}
+Der vorherige Ansatz hat auch einige Nachteile: Es muss $F \in C^2$ sein und man muss die Ableitungen von $F$ zweiter Ordnung an die Funktion übergeben. Diese müssen auch alle in jedem Schritt ausgewertet werden (und höhere Ableitungen sind bei komplizierteren Funktionen oft relativ lange Ausdrücke). Es stellt sich also die Frage, ob man aus den schon berechneten Datenpunkten $f''$ abschätzen kann.
+
+Eine Motivation für das folgende Vorgehen kann folgende Aussage sein:
+
+\textbf{Satz:} Sei $f \in C^2((a,b))$ und $x \in (a,b)$. Dann ist 
+\[
+f''(x) = \lim_{h \to 0} \frac{f(x+h) -2f(x) + f(x-h)}{h^2}.
+\]
+
+\textbf{Beweis:}
+Es gilt:
+\begin{align*}
+f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h} \qquad  f''(x) = \lim_{h \to 0} \frac{f'(x+h)-f'(x)}{h}
+\end{align*}
+Da nach Vorraussetzung alle diese Funktionsgrenzwerte existieren, ergibt Einsetzen:
+\begin{align*}
+f''(x) &= \lim_{h \to 0} \frac{\lim_{h \to 0} \frac{f(x+h)-f(x)}{h}-\lim_{h \to 0} \frac{f(x+2h)-f(x+h)}{h}}{h} = \\
+&=\lim_{h \to 0}  \frac{\frac{f(x+h)-f(x)}{h}- \frac{f(x+2h)-f(x+h)}{h}}{h} = \lim_{h \to 0} \frac{f(x+2h) -2f(x+h) + f(x)}{h^2}.
+\end{align*}
+Wegen der vorausgesetzten Stetigkeit der zweiten Ableitung ist $\lim_{h \to 0} f''(x-h)=f''(x)$, womit die Aussage aus der obigen Gleichheit folgt. \hfill $\blacksquare$
+
+Daraus ergibt sich, dass bei konstanter Schrittweite $h$ folgender Ausdruck ein sinnvolle Abschätzung für die Krümmung in $x_i$ ist:
+\[
+\frac{f(x_{i-2})-2f(x_{i-1})+f(x_i)}{h^2}.
+\]
+
+Ist die Schrittweite nicht konstant, ist diese Abschätzung für Krümmung offensichtlich nicht mehr sinnvoll. Es ist also eine Ausdruck gesucht, der auch für variable Schrittweite funktioniert:
+
+Heuristisch ist $\frac{f(x_1)-f(x_2)}{x_1-x_2}$ eine bessere Schätzung für $f'((x_1+x_2)/2)$ als etwa für $f'(x_1)$ oder $f'(x_2)$. 
+
+Betrachtet man nämlich den Ausdruck. $\frac{f(x_1)-f(x_2)}{x_2-x_1}$  als Näherung von  $f'((x_1+x_2)/2)$ entspricht er genau eine Auswertung des zentralen Differenzeinquotienten, der quadratische Konvergenzordnung hat, mit $h:= (x_1-x_2)/2$. Als Näherung von $f'(x_1)$ entspricht der Ausdruck hingegen der Auswertung des einsteitigen Differenzenquotienten, der lediglich lineare Konvergenzordnung hat, mit einem doppelt so großen $h$.
+
+Seien nun $x_1 < x_2 < x_3$ vorgegeben und wendet man vorherige Überlegung für die Annäherung der ersten Ableitungen für $x_1, x,2$ sowie $x_2,x_3$ an und schreibt das Ergebnis in einen Differenzenquotienten erhält man folgende Näherung für die Krümmung:
+\begin{align*}
+k(x_1,x_2,x_3) :=  \frac{\frac{f(x_1)-f(x_2)}{x_1-x_2} - \frac{f(x_2)-f(x_3)}{x_2-x_3}}{\frac{x_1+x_2}{2} - \frac{x_2+x_3}{2}  } 
+=
+2 \frac{(f(x_1)-f(x_2))(x_2-x_3) + (f(x_2)-f(x_3))(x_2-x_1)}{(x_1-x_2)(x_2-x_3)(x_1-x_3)}
+\end{align*}
+
+Mit dem Mittelwertsatz der Differenzialrechnung kann man auch leicht zeigen, dass es ein $\xi \in (x_1,x_3)$ gibt, sodass $f''(\xi) = k(x_1,x_2,x_3)$. 
+
+Dieses Verfahren ist offenbar für die ersten zwei Schritte noch nicht anwendbar. Das ist aber nicht schlimm, weil es kein deutlicher Nachteil ist, wenn man diese einfach mit minimaler Schrittweite durchführt. Es gibt aber zwei relevantere Probleme:
+
+Erstens, für die Abschätzung aus \eqref{eq:absch_h} benötigt man (bei aktuellen Bezeichnungen)  $\sup_{x \in [x_3,x_4]} |f''(x)|$. Die Methode aus dem vorherigen Abschnitt liefert $f''(x_3)$, was tendenziell eine bessere Abschätzung für dieses Supremum sein wird, als das $f''(\xi)$ mit $\xi \in (x_1,x_3)$ von dieser Methode.
+
+Zweitens, ist diese Methode nicht gut umsetzbar, wenn man das Koordinatensystem dreht.
+
+\subsubsection{Schrittweitensteuerung durch Länge der Korrektorschrittes}\label{chap:5.1.3}
+Der Prediktor tut nichts anderes als eine Tangente $t_i(x)$ entlang von $f$ durch den Punkt $(x_i,f(x_i))$ zu legen und anhand dessen einen Punkt $(x_{i+1},\tilde{y}_{i+1})$ zu berechnen, der dann durch einen Korrektorschritt zum Punkt $(x_{i+1},f(x_{i+1}))$ korrigiert wird. Bezeichne $d:= |f(x_{i+1})-\tilde{y}_{i+1}|$ die Länge des Korrektorschrittes. 
+
+Ein Vorteil dieses Verfahrens ist, dass es sehr wenig Aufwand hat und weder $F \in C^2$ gefordert werden muss noch Ableitungen zweiter Ordnung benötigt werden. 
+
+Ein Nachteil ist, dass man erst nach dem Prediktor- und Korrektschritt $d$ erhält und dann "falls $d$ zu groß war", Prediktor- und Korrektschritt wiederholen muss. Das zweite Problem, ist dass vorerst nicht klar, ist aber welcher Schranke für $d$ man den Iterationsschritt wiederholen soll und um wie viel keiner die Schrittweite dann sein soll.
+
+Um die intuitiv vernünftige Tatsache, dass ein großer Korrektorschritt ein Anzeichen dafür ist, dass $f$ nicht gut approximiert wird, auch formal plausibel zu machen und ein Gefühl dafür zu bekommen, welche $d$ ''zu groß'' sind, kann man sich folgendes überlegen:
+
+Wir wissen, dass $(f-t_i)(x_i)=0$, $(f-t_i)'(x_i)=0$ und $(f-t_i)''=f''$. Daraus erhält man mit dem Satz von Taylor im Entwickungspunkt $x_i$:
+\[
+\exists \xi \in (x_i,x_{i+1}) : (f-t_i)(x_{i+1}) = \frac{f''(\xi)}{2}(x_{i+1}-x_i)^2 = \frac{f''(\xi)}{2}h^2.
+\]
+Wegen $\frac{f''(\xi)}{2}(x_{i+1}-x_i)^2$ kann man daraus folgern, dass
+\[
+\exists \xi \in (x_i,x_{i+1}) : h = \sqrt{\frac{2d}{|f''(\xi)|}}.
+\]
+War nun $d > 4c$ folgt daraus sofort, dass die Ungleichung auf der linken Seite der Implikation in Formel \eqref{eq:absch_h} verletzt ist. Man kann daraus natürlich nicht schließen, dass daher die Abschätzung auf der rechten Seite dieser Implikation verletzt sein muss, aber es macht dennoch plausibel, dass $h$ ungünstig groß gewesen ist. 
+
+Man sieht daraus auch, dass es die Toleranz für $d$ in der Größenordnung von $c$ wählen sollte und der Faktor, um dem man die Schrittweite gegebenenfalls verringert, proportional zu $\sqrt{d/c}$ sein sollte. Bei der Implementierung wird man zusätzlich fordern, dass der Faktor jedenfalls größer 2 sein muss, um nicht mehrmals hintereinander mit sehr ähnlichen Schrittweiten zu arbeiten. Außerdem wird man auch hier eine Mindestschrittweite festlegen.
+
+\subsection{Implementierungen}
+Da bei adaptiver Schrittweite für den Nutzer im Vorhinein nicht mehr absehbar ist, wie weit die Nullstellenmenge bei gegebener Schrittanzahl gezeichnet ist, wird nun die Länge des Polygonzuges als Abbruchkriterium verwendet.
+
+Die Funktionen haben also jetzt folgende Form:
+\begin{verbatim}
+[ x, y, z, steps ] = 
+    implicitCurveAdapt( F, dFx, dFy, d2Fxx, d2Fxy, d2Fyy, x0, y0, length,
+    maxStepWidth, minStepWidth, c )
+\end{verbatim}
+Dabei sind die Eingabe-Parameter:
+\begin{itemize}
+	\item Die ersten sechs sind $F$ bzw deren Ableitungen (werden die Ableitungen 2. Ordnung nicht gebraucht, entfallen sie)
+	\item \verb|x0| und \verb|y0| sind die Startwerte
+	\item \verb|length| ist die Ziel-Länge des Polygonzuges
+	\item \verb|maxStepWidth| und \verb|minStepWidth| geben der Bereich für die Schrittweite an
+	\item \verb|c| ist die Konstante $c$ aus Kapitel \ref{chap:5.1}.
+\end{itemize}
+
+Die Ausgabe-Daten sind:
+\begin{itemize}
+	\item \verb|x| und \verb|y| sind die Vektoren der Eckpunkte des Polygonzuges.
+	\item \verb|z| dient zur Ausgabe eines der Parameter für die adaptive Schrittweite (zu Testzwecken)
+	\item \verb|steps| ist die Anzahl der benötigten Schritte.
+\end{itemize}
+
+Es sind folgende Funktionen implementiert worden:
+\begin{enumerate}
+	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.1} sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
+	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.2} sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
+	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.3} mit Reduktion der Schrittweite um den Faktor $\sqrt{d/c}$, falls $d>c$ sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
+	\item Eine Kombination der Kriterien aus 1. und 3.
+\end{enumerate}
+
+Ein Listing des Codes der 4. Version befindet sich im Anhang. 
 
 %vielleicht will man das auch in mit A und mit C aufteilen
 \subsection{Tests}
@@ -286,14 +437,12 @@ Die Implementierung der Funktion sieht dann im Wesentlichen (Assertions etc. wur
 \lstinputlisting[firstline=1, lastline=1000,caption=Ich bin ein Beispiel-Lisitng]{code/nivlines4.m}
 
 %das sind jetzt sehr informatik / matlab-syntax-lastige dinge, die man auch streichen kann
-%aber falls man den code wo einbindet sollte man es vlt erwähnt haben, damit die leute nicht
-%über unbekannte syntax stolpern
+%aber falls man den code wo einbindet sollte man es vlt erwähnt haben, damit die leute nicht über unbekannte syntax stolpern
+
+Da die Anzahl der Datenpunkte für unterschiedliche Niveaulinien sehr unterschiedlich sein kann (zB wegen unterschiedlicher Länge oder Krümmung) und man die jeweiligen Anzahl je nach Algorithmus im Vorhinein auch nicht weiß, ist es nicht sinnvoll, alle Vektoren der $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveau-Linien in gemeinsame Matrizen der Art $X, Y \in \R^{k \times maxSteps}$ zu schreiben.
 
 
-
-
-
-Da Niveaulinien zu unterschiedlichen Funktionswerten sehr unterschiedlich lang sein können, ist es nicht sinnvoll, alle das die $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveaulinien in Matrix $X \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
+der Punkte für die einzelnen Niveaulinien in Matrix $X \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
 
 \subsection{Tests}
 Sei %(x.^2+y.^2+10^-2).^-1 + ((x-0.5).^2+y.^2+10^-2).^-1
