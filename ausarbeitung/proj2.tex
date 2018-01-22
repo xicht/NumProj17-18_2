@@ -210,12 +210,13 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 
 \subsection{Implementierung}
 \begin{algorithm}
+	\label{alg:A_const_h}
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
-	\Input{$F$ Funktion\\
-		$(x_0,y_0)$ Startpunkt\\
-		$h$ Schrittweite\\
-		$n$ Schrittzahl}
+	\Input{$F$...Funktion\\
+		$(x_0,y_0)$...Startpunkt\\
+		$h$...Schrittweite\\
+		$n$...Schrittzahl}
 	\Output{$(x_j,y_j)_{j\in \left[1,n\right] }$}
 	\For {i = 1 to n} 
 	{
@@ -227,7 +228,20 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 	}
 	\caption{Kurve A}
 \end{algorithm}
+Die Implementierung ist eine einfache Umsetzung von Algorithmus \ref{alg:A_const_h}.
+Fehlschlagen können dabei folgende 3 Punkte:
+\begin{itemize}
+	\item $\diff{F}{y}(x_{i-1},y_{i-1}$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.
+	\item Das Newton verfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden indem man die Schrittweite reduziert.
+\end{itemize}
 \subsection{Tests}
+Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird sehr ungenau, vor allem bei großen Schrittweiten. Siehe Abbildung \ref{fig:Halbkreis_a}.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\linewidth]{plots/A/Halbkreis.eps}
+\caption{Plot zweier Halbkreise mit Schrittweiten $10^{-3}$ und $0.2$}
+\label{fig:Halbkreis_a}
+\end{figure}
 
 \section{Implementierung von Aufgabe b Version 1}
 %also mit 90 Drehungen
