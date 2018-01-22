@@ -11,7 +11,7 @@ function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt1( F, dFx, dFy, 
 % Anzahl der zu berechnenten Wertepaare
 % Schrittweite an der x-Achse.
 
-%STRATEGIE FUER ADAPTIVE SCHRITTWEITE: SCHÄTZE f''
+%STRATEGIE FUER ADAPTIVE SCHRITTWEITE: SCH?TZE f''
 
 assert(isZero(F(x0, y0)));
 
@@ -53,18 +53,25 @@ while true %quasi eine for-schleife der art for k=0:infinity
                 currStepWidth = minStepWidth;
             end
         end
-        if currStepWidth < minsw && i>3
+        
+        
+        err=1;   
+        while err==1 && currStepWidth >= minStepWidth
+            if currStepWidth < minsw && i>3
             minsw=currStepWidth;
-        end;
-        x(i) = x(i-1) +currStepWidth;
+            end
+            x(i) = x(i-1) +currStepWidth;
         
-        y(i) = y(i-1) - dx/dy * currStepWidth;    %predictor
-        G = @(z)F(x(i), z);
-        g = @(z)dFy(x(i), z);
-        y(i) = Newton(G, g, y(i));            %corrector    
+            y(i) = y(i-1) - dx/dy * currStepWidth;    %predictor
+            G = @(z)F(x(i), z);
+            g = @(z)dFy(x(i), z);
+            [y(i), err] = Newton(G, g, y(i));            %corrector    
         
-        if i>2  %kruemmungsschaetzer, vlt weisst du wie man eine codezeile auf 2 textzeilen aufteilt...
-            z(i) = 2* ( (y(i-2)-y(i-1))*(x(i-1)-x(i)) + (y(i-1)-y(i))*(x(i-1)-x(i-2))  ) /(x(i-2)-x(i-1)) / (x(i-1)-x(i))  / (x(i-2)-x(i))  ;
+            if i>2  %kruemmungsschaetzer, vlt weisst du wie man eine codezeile auf 2 textzeilen aufteilt...
+                z(i) = 2* ( (y(i-2)-y(i-1))*(x(i-1)-x(i)) + (y(i-1)-y(i))*(x(i-1)-x(i-2))  ) /(x(i-2)-x(i-1)) / (x(i-1)-x(i))  / (x(i-2)-x(i))  ;
+            end
+            
+            currStepWidth = currStepWidth/2;
         end
         
         polygon_length = polygon_length + sqrt((x(i)-x(i-1))^2+(y(i)-y(i-1))^2);
@@ -74,7 +81,7 @@ while true %quasi eine for-schleife der art for k=0:infinity
             break;
         end
     end
-        
+           
     if polygon_length >= length
         %nicht benoetigten speicher freigeben
         x=x(1:steps);
@@ -89,6 +96,3 @@ end
     
     
 end
-
-
-

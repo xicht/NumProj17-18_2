@@ -1,4 +1,4 @@
-function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt3( F, dFx, dFy, x0, y0, length, maxStepWidth, minStepWidth, c )
+function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt2( F, dFx, dFy, d2Fxx, d2Fxy, d2Fyy, x0, y0, length, maxStepWidth, minStepWidth, c )
 % implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0, 
 % gibt weiters zurueck: polygon_length: laenge des Polygonzuges , 
 % steps: anzahl der berechnungsschritte, z: kruemmungsschaetzer
@@ -11,7 +11,7 @@ function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt3( F, dFx, dFy, 
 % Anzahl der zu berechnenten Wertepaare
 % Schrittweite an der x-Achse.
 
-%STRATEGIE FUER ADAPTIVE SCHRITTWEITE: LAENGE DES KORREKTORSCHRITT
+%STRATEGIE FUER ADAPTIVE SCHRITTWEITE: BERECHNE f''
 
 assert(isZero(F(x0, y0)));
 
@@ -45,29 +45,35 @@ while true %quasi eine for-schleife der art for k=0:infinity
         assert(abs(dx/dy) ~= Inf);
         
         %schrittweitenberechnung
-        currStepWidth=maxStepWidth; 
+        if i<=1
+            currStepWidth= minStepWidth;
+        else
+            currStepWidth = sqrt(8*c/(abs(z(i-1))+8*c/maxStepWidth));
+        end
+        if currStepWidth < minStepWidth
+                currStepWidth = minStepWidth;
+        end
+        
+        
         
         err=1;   
-        while (err==1 || z(i)>c  )&& currStepWidth >= minStepWidth
+        while err==1 && currStepWidth >= minStepWidth
             if currStepWidth < minsw && i>1 %zum testen
             minsw=currStepWidth;
             end
                
             x(i) = x(i-1) +currStepWidth;
         
-            y(i) = y(i-1) - dx/dy * currStepWidth;%predictor
-            pred=y(i);
+            y(i) = y(i-1) - dx/dy * currStepWidth;
+            %predictor
             G = @(z)F(x(i), z);
             g = @(z)dFy(x(i), z);
-            [y(i), err] = Newton(G, g, y(i)); %corrector  
-            
-            if err==1
-                continue;
-                currStepWidth = currStepWidth/2;
-            end
+            [y(i), err] = Newton(G, g, y(i));            %corrector    
         
-            z(i)=abs(y(i)-pred);
-            currStepWidth = currStepWidth/2/sqrt(z(i)/c);
+            %kruemmung, vlt weisst du wie man eine codezeile auf 2 textzeilen aufteilt...
+            z(i) = (-d2Fxx(x(i),y(i))*(dFy(x(i),y(i)))^2 +2*d2Fxy(x(i),y(i))*dFx(x(i),y(i))*dFy(x(i),y(i)) -d2Fyy(x(i),y(i))*(dFx(x(i),y(i)))^2 ) /(dFy(x(i),y(i)))^3;
+            
+            currStepWidth = currStepWidth/2;
         end
         
         polygon_length = polygon_length + sqrt((x(i)-x(i-1))^2+(y(i)-y(i-1))^2);

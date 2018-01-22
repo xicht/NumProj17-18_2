@@ -1,4 +1,4 @@
-function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt3( F, dFx, dFy, x0, y0, length, maxStepWidth, minStepWidth, c )
+function [ x, y, z, polygon_length, steps ] = implicitCurveAdapt4( F, dFx, dFy, d2Fxx, d2Fxy, d2Fyy, x0, y0, length, maxStepWidth, minStepWidth, c )
 % implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0, 
 % gibt weiters zurueck: polygon_length: laenge des Polygonzuges , 
 % steps: anzahl der berechnungsschritte, z: kruemmungsschaetzer
@@ -31,6 +31,7 @@ while true %quasi eine for-schleife der art for k=0:infinity
     x(100*2^k+1) = 0;
     y(100*2^k+1) = 0;
     z(100*2^k+1) = 0;
+    zz(100*2^k+1) = 0;
     
     if k==0
         prev_steps=1;
@@ -45,10 +46,17 @@ while true %quasi eine for-schleife der art for k=0:infinity
         assert(abs(dx/dy) ~= Inf);
         
         %schrittweitenberechnung
-        currStepWidth=maxStepWidth; 
-        
+        if i<=1
+            currStepWidth= minStepWidth;
+        else
+            currStepWidth = sqrt(8*c/(abs(zz(i-1))+8*c/maxStepWidth));
+        end
+        if currStepWidth < minStepWidth
+                currStepWidth = minStepWidth;
+        end 
+        z(i)=inf;
         err=1;   
-        while (err==1 || z(i)>c  )&& currStepWidth >= minStepWidth
+        while (err==1 || z(i)>5*c  )&& currStepWidth >= minStepWidth
             if currStepWidth < minsw && i>1 %zum testen
             minsw=currStepWidth;
             end
@@ -67,6 +75,7 @@ while true %quasi eine for-schleife der art for k=0:infinity
             end
         
             z(i)=abs(y(i)-pred);
+            zz(i) = (-d2Fxx(x(i),y(i))*(dFy(x(i),y(i)))^2 +2*d2Fxy(x(i),y(i))*dFx(x(i),y(i))*dFy(x(i),y(i)) -d2Fyy(x(i),y(i))*(dFx(x(i),y(i)))^2 ) /(dFy(x(i),y(i)))^3;
             currStepWidth = currStepWidth/2/sqrt(z(i)/c);
         end
         
