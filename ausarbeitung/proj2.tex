@@ -14,6 +14,7 @@
 \usepackage{listings}
 \usepackage{lineno}
 \usepackage{tabularx}
+\usepackage[linesnumbered,algoruled,boxed,lined]{algorithm2e}
 
 % links in pdf
 \usepackage[unicode,colorlinks=true,pagebackref=false]{hyperref}
@@ -205,7 +206,27 @@ Dazu soll die Funktion $F$ auf der gesamten betrachteten Menge die Bedingungen d
 \[
 f(x_{n+1})=f(x_n)+f'(x_n)*h+r_n, \left|r_n\right|\leq \sup\limits_{a,b \in \left[x_n,x_{n+1}\right]}\left|{f'(a)-f'(b)}\right|*h.
 \]
-Demnach ist für ausreichend kleine Schrittweite das Restglied $r_n$ ausreichend klein, so dass die Nullstelle für $F(x_n+1,.)$ mittels Newtonverfahren von $f(x_n)+f'(x_n)*h$ aus gefunden werden kann.
+Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug, so dass die Nullstelle für $F(x_{n+1},.)$ und somit $f(x_{n+1})$ mittels Newtonverfahren gefunden werden kann.
+
+\subsection{Implementierung}
+\begin{algorithm}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$ Funktion\\
+		$(x_0,y_0)$ Startpunkt\\
+		$h$ Schrittweite\\
+		$n$ Schrittzahl}
+	\Output{$(x_j,y_j)_{j\in \left[1,n\right] }$}
+	\For {i = 1 to n} 
+	{
+		$x_i = x_{i-1}+h$\\
+		$df = -\frac{\diff{F}{x}(x_{i-1},y_{i-1})}{\diff{F}{y}(x_{i-1},y_{i-1})}$\\
+		$\tilde y_i = x_{i-1}+h*df$\\
+		$G(a) = F(x_i,a)$\\
+		$y_i$ = Newton($G$, $\tilde y_i$)
+	}
+	\caption{Kurve A}
+\end{algorithm}
 \subsection{Tests}
 
 \section{Implementierung von Aufgabe b Version 1}
