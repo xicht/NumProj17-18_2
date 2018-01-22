@@ -210,12 +210,13 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 
 \subsection{Implementierung}
 \begin{algorithm}
+	\label{alg:A_const_h}
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
-	\Input{$F$ Funktion\\
-		$(x_0,y_0)$ Startpunkt\\
-		$h$ Schrittweite\\
-		$n$ Schrittzahl}
+	\Input{$F$...Funktion\\
+		$(x_0,y_0)$...Startpunkt\\
+		$h$...Schrittweite\\
+		$n$...Schrittzahl}
 	\Output{$(x_j,y_j)_{j\in \left[1,n\right] }$}
 	\For {i = 1 to n} 
 	{
@@ -227,8 +228,44 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 	}
 	\caption{Kurve A}
 \end{algorithm}
+Die Implementierung ist eine einfache Umsetzung von Algorithmus \ref{alg:A_const_h}.
+Fehlschlagen können dabei folgende 3 Punkte:
+\begin{itemize}
+	\item $\diff{F}{y}(x_{i-1},y_{i-1}$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.
+	\item Das Newton verfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden indem man die Schrittweite reduziert.
+\end{itemize}
 \subsection{Tests}
+Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird sehr ungenau, vor allem bei großen Schrittweiten. Siehe Abbildung \ref{fig:Halbkreis_a}.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\linewidth]{plots/A/Halbkreis.eps}
+\caption{Plot zweier Halbkreise mit Schrittweiten $10^{-3}$ und $0.2$}
+\label{fig:Halbkreis_a}
+\end{figure}
+Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
+\begin{align*}
+G(x,y) = sin(10*\pi*(sin(x)-y))
+\end{align*}
+mit Nullstellen
+\begin{align*}
+\left\lbrace (x,y)\in\mathbb{R}: G(x,y)=0 \right\rbrace = \left\lbrace (z, sin(z)+n*0.1): z \in \mathbb{R}, n \in \mathbb{N} \right\rbrace
+\end{align*}
+Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der Algorithmus ab einer Schrittweite $\geq \frac{\pi}{8}$ falsche Nullstellen zu finden.
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\linewidth]{plots/A/vieleSinuse.eps}
+\caption{Illustration der Nullstellenmenge von $G$.}
+\label{fig:vieleSinuse_a}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\linewidth]{plots/A/vieleSinuse_Schrittweiten.eps}
+\caption{$G$, $x_0 = y_0 = 0$ dargestellt mit verschiedenen Schrittweiten.}
+\label{fig:vieleSinuse_schrittweiten_a}
+\end{figure}
 
+
+	
 \section{Implementierung von Aufgabe b Version 1}
 %also mit 90 Drehungen
 
