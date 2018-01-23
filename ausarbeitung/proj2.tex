@@ -347,14 +347,23 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 	\caption{Kurve B2}
 \end{algorithm}
 \subsection{Tests}
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.85\linewidth]{plots/B/VergleichKorrektur.eps}
 	\caption{Vergleich der Korrekturschrittgrößen zwischen V1 und V2 als 10-facher Radius der roten bzw grünen Kreise für die Funktion $F(x,y) = 0.2x^2+y^2-1$}
 	\label{fig:KorrVergleich_b}
 \end{figure}
+\begin{wrapfigure}{R}{0.4\textwidth}
+	\centering
+	\includegraphics[width=1\linewidth]{plots/B/VergleichKorrektur_2.eps}
+	\caption{Wie Abb. \ref{fig:KorrVergleich_b} mit $x^3-xy+x^2-1$}
+	\label{fig:KorrVergleich2_b}
+\end{wrapfigure}
+Abbildungen \ref{fig:KorrVergleich_b} und \ref{fig:KorrVergleich2_b} stellt die notwendigen Korrekturen nach dem Prediktor für beiden Algorithmen \ref{alg:B_V1} und \ref{alg:B_V2}. Man erkennt dabei, dass der Fehler an Stellen mit großer erster und zweiter Ableitung groß ist.
+Die Laufzeiten beider Algorithmen wurden nicht gemessen, sind aber in beiden Fällen für $\leq10000$ Itterationen nicht bemerkbar.
 
-
+\section{Aufgabe c}
+Wenn sich beide Ableitungen von $F$ $0$ annähern %todo
 \section{Implementierung von adaptiver Schrittweite}
 Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzuges durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
