@@ -435,7 +435,7 @@ Es sind folgende Funktionen implementiert worden:
 \begin{enumerate}
 	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.1} sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
 	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.2} sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
-	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.3} mit Reduktion der Schrittweite um den Faktor $\sqrt{d/c}$, falls $d>c$ sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
+	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.3} mit Reduktion der Schrittweite um den Faktor $\sqrt{d/c}$, falls $d>5c$ sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
 	\item Eine Kombination der Kriterien aus 1. und 3.
 \end{enumerate}
 
@@ -443,9 +443,7 @@ Ein Listing des Codes der 4. Version befindet sich im Anhang.
 
 %vielleicht will man das auch in mit A und mit C aufteilen
 \subsection{Tests}
-
-%vielleicht will man ein eigenes Kapitel für Aufgabe c, aber 
-%ich tu mal so als würde die in den anderen Aufgaben hinreichend behandelt.
+Die Strategien wurden für die Funktion $F(x,y) := \sin(x^2)-y$ getestet.
 
 \section{Implementierung von Niveaulinien}
 \subsection{Problemstellung und Idee der Implementierung}

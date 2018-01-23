@@ -70,8 +70,8 @@ while true %quasi eine for-schleife der art for k=0:infinity
             [y(i), err] = Newton(G, g, y(i)); %corrector  
             
             if err==1
-                continue;
                 currStepWidth = currStepWidth/2;
+                continue;
             end
         
             z(i)=abs(y(i)-pred);
