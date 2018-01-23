@@ -1,4 +1,4 @@
-function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, steps, stepWidth )
+function [ x, y ] = implicitCurve_ortho( F, dFx, dFy, x0, y0, steps, stepWidth,plottinator )
 %implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0 und
 %xi=x0+stepWidth*i mit i aus 0 bis steps
 %
@@ -7,6 +7,7 @@ function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, steps, stepWidth )
 % x0,y0 Startpunkt, es muss F(x0,y0) == 0 gelten
 % Anzahl der zu berechnenten Wertepaare
 % Schrittweite an der x-Achse.
+global print_error
 
 assert(isZero(F(x0, y0)));
 
@@ -29,7 +30,12 @@ for i = 2:steps+1
         else
             dir = 1;
         end
-        [y_rek, x_rek] = implicitCurve(G, dGx, dGy, y(i-1), x(i-1), steps+1-i, abs(stepWidth)*dir);
+if nargin >= 8
+        p = @(a,b) plottinator(b,a);
+        [y_rek, x_rek] = implicitCurve_ortho(G, dGx, dGy, y(i-1), x(i-1), steps+1-i, abs(stepWidth)*dir,p);
+else
+        [y_rek, x_rek] = implicitCurve_ortho(G, dGx, dGy, y(i-1), x(i-1), steps+1-i, abs(stepWidth)*dir);
+end
         x(i:end) = x_rek; 
         y(i:end) = y_rek; 
         break;
@@ -40,7 +46,15 @@ for i = 2:steps+1
         y(i) = y(i-1) - dx/dy * stepWidth;    %predictor
         G = @(z)F(x(i), z);
         g = @(z)dFy(x(i), z);
-        y(i) = Newton(G, g, y(i));            %corrector
+        h = Newton(G, g, y(i));            %corrector
+        tmp = h-y(i);
+        y(i) = h;
+if(print_error == true)
+    th = 0:pi/50:2*pi;
+    xunit = 10*tmp * cos(th) + x(i);
+    yunit = 10*tmp * sin(th) + y(i);
+    plottinator(xunit, yunit);
+end
     end
 end
 

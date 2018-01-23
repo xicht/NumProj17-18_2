@@ -1,4 +1,4 @@
-function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, steps, stepWidth )
+function [ x, y ] = implicitCurve_ortho_noCorr( F, dFx, dFy, x0, y0, steps, stepWidth )
 %implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0 und
 %xi=x0+stepWidth*i mit i aus 0 bis steps
 %
@@ -8,7 +8,7 @@ function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, steps, stepWidth )
 % Anzahl der zu berechnenten Wertepaare
 % Schrittweite an der x-Achse.
 
-assert(isZero(F(x0, y0)));
+%assert(isZero(F(x0, y0)));
 
 x = zeros(1,steps+1);
 y = zeros(1,steps+1);
@@ -29,7 +29,7 @@ for i = 2:steps+1
         else
             dir = 1;
         end
-        [y_rek, x_rek] = implicitCurve(G, dGx, dGy, y(i-1), x(i-1), steps+1-i, abs(stepWidth)*dir);
+        [y_rek, x_rek] = implicitCurve_ortho_noCorr(G, dGx, dGy, y(i-1), x(i-1), steps+1-i, abs(stepWidth)*dir);
         x(i:end) = x_rek; 
         y(i:end) = y_rek; 
         break;
@@ -40,7 +40,7 @@ for i = 2:steps+1
         y(i) = y(i-1) - dx/dy * stepWidth;    %predictor
         G = @(z)F(x(i), z);
         g = @(z)dFy(x(i), z);
-        y(i) = Newton(G, g, y(i));            %corrector
+        %y(i) = Newton(G, g, y(i));            %corrector
     end
 end
 

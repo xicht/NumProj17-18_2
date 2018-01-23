@@ -3,15 +3,18 @@ global epsZero;
 epsZero = 1000*eps;
 
 r = 1;
-G = @(x,y) x.^2+y.^2-r^2
-dGx = @(x,y) 2*x 
+G = @(x,y) 0.1*x.^2+y.^2-r^2
+dGx = @(x,y) 0.2*x 
 dGy = @(x,y) 2*y 
-stepwidth = 10^-3
+stepwidth = 10^-2
 phi = 0
-x0 = cos(phi)*r
-y0 = sin(phi)*r
-%[x y] = implicitCurve(G, dGx, dGy, x0, y0, floor((1-x0)/stepwidth -epsZero)*3, stepwidth);
-[x y] = implicitCurve(G, dGx, dGy, x0, y0, 2*pi*r, 5*10^-3, 5*10^-2);  % hier geht was schief, bei 100 geht's noch
-l = linspace(0,2*pi);
-%plot(cos(l), sin(l), x,y);
+x0 = 0
+y0 = 1
+h = 10^-1*2
+[x y] = implicitCurve(G, dGx, dGy, x0, y0, 4.5*pi*r, h,h);  % hier geht was schief, bei 100 geht's noch
+
 plot(x,y);
+hold on
+[x y] = implicitCurve_noCorr(G, dGx, dGy, x0, y0, 4.5*pi*r, h,h);  % hier geht was schief, bei 100 geht's noch
+plot(x,y);
+hold off
