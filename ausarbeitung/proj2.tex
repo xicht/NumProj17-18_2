@@ -180,17 +180,14 @@ Die Umgebung $V \subset \R$ in der Zielmenge von $f$ kann durch ganz $\R$ ersetz
 $\blacksquare$
 
 \textbf{Satz \thesatz\refstepcounter{satz}:} Sei unter den Vorraussetzungen des vorherigen Satz $F$ zwei mal stetig differenzierbar.
-
 Dann ist $f \in C^2((a_0,b_0))$ mit $f''(x) = $
 \[
 \frac{ \!-\secdiff{F}{x}(x,f(x)) \left( \diff{F}{y}(x,f(x)) \right)^2 \!\!\! +\! 2 \diffdiff{F}{x}{y}(x,f(x))\diff{F}{x}(x,f(x))\diff{F}{y}(x,f(x)) \!-\! \secdiff{F}{y}(x,f(x)) \left( \diff{F}{x}(x,f(x)) \right)^2  }{ \left(\diff{F}{y}(x,f(x))\right)^3 }.
 \]
-
 Außerdem gilt:
 \[
 \forall x \in (a_0,b_0) \exists \xi \in (x_0,x)\cup (x,x_0) : f(x) = y_0 + \frac{\diff{F}{x}(x_0,y_0)}{\diff{F}{y}(x_0,y_0)}(x-x_0) + \frac{f''(\xi)}{2}(x-x_0)^2.
 \]
-
 \textbf{Beweis:} Aus $F \in C^2$ folgt mit der Kettenregel und Einsetzen der Darstellung \eqref{eq:fstrich} für $f'$:
 \begin{align*}
 \frac{d}{dx}\left( \diff{F}{x}(x,f(x))  \right) &= \left( \secdiff{F}{x}(x,f(x)) , \diffdiff{F}{x}{y}(x,f(x))  \right) \cdot \binom{1}{f'(x)} \\
@@ -207,7 +204,6 @@ Dazu soll die Funktion $F$ auf der gesamten betrachteten Menge die Bedingungen d
 f(x_{n+1})=f(x_n)+f'(x_n)*h+r_n, \left|r_n\right|\leq \sup\limits_{a,b \in \left[x_n,x_{n+1}\right]}\left|{f'(a)-f'(b)}\right|*h.
 \]
 Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug, so dass die Nullstelle für $F(x_{n+1},.)$ und somit $f(x_{n+1})$ mittels Newtonverfahren gefunden werden kann.
-
 \subsection{Implementierung}
 \begin{algorithm}
 	\label{alg:A_const_h}
@@ -222,7 +218,7 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 	{
 		$x_i = x_{i-1}+h$\\
 		$df = -\frac{\diff{F}{x}(x_{i-1},y_{i-1})}{\diff{F}{y}(x_{i-1},y_{i-1})}$\\
-		$\tilde y_i = x_{i-1}+h*df$\\
+		$\tilde y_i = y_{i-1}+h*df$\\
 		$G(a) = F(x_i,a)$\\
 		$y_i$ = Newton($G$, $\tilde y_i$)
 	}
@@ -253,7 +249,7 @@ mit Nullstellen
 Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der Algorithmus ab einer Schrittweite $\geq \frac{\pi}{8}$ falsche Nullstellen zu finden.
 \begin{figure}[h]
 \centering
-\includegraphics[width=1\linewidth]{plots/A/vieleSinuse.eps}
+\includegraphics[width=0.85\linewidth]{plots/A/vieleSinuse.eps}
 \caption{Illustration der Nullstellenmenge von $G$.}
 \label{fig:vieleSinuse_a}
 \end{figure}
@@ -265,20 +261,95 @@ Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der
 \end{figure}
 
 
-	
-\section{Implementierung von Aufgabe b Version 1}
+\section{Aufgabe b}
+Die Voraussetzung des Satzes über implizite Funktionen, dass die Ableitung nach $y$ nicht $0$ werden darf ist sehr restriktiv, da so nicht einmal ein Kreis gezeichnet werden kann. Es ist möglich diese Voraussetzung abzuschwächen indem man fordert, dass in den Nullstellen entweder die Ableitung nach $x$ oder $y$ ungleich $0$ sein müssen. Dadurch kann die Nullstellenmenge der Funktion durch offene Mengen überdeckt werden für die jeweils $F(x,f(x))=0$ oder $F(g(y),y)=0$ gilt.
+\subsection{Implementierung Version 1}
 %also mit 90 Drehungen
-
-\subsection{Tests}
-
-\section{Implementierung von Aufgabe b Version 2}
+Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist rekursiv den Algorithmus aufzurufen, wenn die Betragsmäßige Ableitung in eine Richtung größer wird als die andere. Wichtig dabei ist auf folgendes zu achten, dass der Wechsel Richtung früh genug erfolgt, damit der Bereich mit Nullstellen nicht in eine Richtung verlassen wird und dass der Richtungswechsel mit dem korrekten Vorzeichen passiert. 
+\begin{algorithm}[h]
+	\label{alg:B_V1}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$...Funktion\\
+		$(x_0,y_0)$...Startpunkt\\
+		$h$...Schrittweite\\
+		$n$...Schrittzahl}
+	\Output{$(x_j,y_j)_{j\in \left[1,n\right] }$}
+	\For {i = 1 to n} 
+	{
+		dx = $\diff{F}{x}(x_{i-1},y_{i-1})$\\
+		dy = $\diff{F}{y}(x_{i-1},y_{i-1})$\\
+		\eIf{abs(dy)$<$abs(dx)}
+		{
+			$G(a,b)$ = $F(b,a)$\\
+			dir = 1
+			\uIf{abs(dy) $>$ TOL}
+			{dir = sgn(dy)}
+			\ElseIf{i $>$ 1}
+			{dir = sgn($y_{i-1}$-$y_{i-2}$)}
+			$(x_k,y_k)_{i..n}$ = KurveB1($G$,$(y_{i-1},x_{i-1})$,abs($h$)*dir, n-i)\\
+			return
+		}
+		{
+			$x_i = x_{i-1}+h$\\
+			$\tilde y_i = y_{i-1}+h*df$\\
+			$G(a) = F(x_i,a)$\\
+			$y_i$ = Newton($G$, $\tilde y_i$)
+		}
+	}
+	\caption{Kurve B1}
+\end{algorithm}
+Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusagen wie lang die Kurve wird. In Algorithmus \ref{alg:A_const_h} läuft die Kurve von $\left\lbrace x_0\right\rbrace \times\mathbb{R}$ bis $\left\lbrace x_0+h*n\right\rbrace \times\mathbb{R}$. Das bedeutet für $m\in \mathbb{N}$, dass man einen Viertelkreis mit $n=m$ und $h=\frac{1}{m}$ zeichnen kann. Mit Algorithmus \ref{alg:B_V1} benötigt man dafür $n=\lceil m*\sqrt{2}\rceil$ und $h=\frac{1}{m}$, da der Richtungswechsel bei $x_i\approx sin(\frac{\pi}{4})$ stattfindet.
+\subsection{Implementierung Version 2}
 %das mit beliebiger Richtung
+Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ die Ableitung der impliziten Funktion $g'(x)=0$ ist.
+Dies ist einfach zu verifizieren, da
+\begin{align}
+	t_\phi(x,y) = (x*cos(\phi)-y*sin(\phi), x*sin(\phi)+y*cos(\phi))\\
+	g'(x) = -\frac{\diff{G}{x}(x,y)}{\diff{G}{y}(x,y)}\\
+	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))*cos(\phi)+\diff{F}{y}(t_\phi(x,y))*sin(\phi)=c(x,y)*sin(\phi + \psi(x,y))\\
+	\diff{G}{y}(x,y)=c(x,y)*cos(\phi + \psi(x,y))
+\end{align}
+Dadurch ist nun $h*n$ annähernd die Kurvenlänge und die Genauigkeit des Prediktorschritts ist unabhängig von der ersten Ableitung von $F$.
+Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine eindeutige Richtung vorgegeben ist, müssen andere Punkte dafür herangezogen werden. Mögliche Ansätze sind u.a. positives Skalarprodukt zwischen aktuellem und letzten Richtungsvektor oder minimale Differenz zwischen aktuellem und letzten $\phi$.
 
-Um $y_n = f(x_n)$ zu berechnen betrachte man mittels Taylorformel.
-\[
-f(x_{n+1})=f(x_n)+f'(x_n)*h+r, \left|r\right|\leq \left|\sup\limits_{x \in \left[x_n,x_{n+1}\right]}\frac{f''(x)}{2}\right|*h^2
-\]
+\begin{algorithm}[h]
+	\label{alg:B_V2}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$...Funktion\\
+		$(x_0,y_0)$...Startpunkt\\
+		$h$...Schrittweite\\
+		$n$...Schrittzahl}
+	\Output{$(x_j,y_j)_{j\in \left[1,n\right] }$}
+	\For {i = 1 to n} 
+	{
+		dx = $\diff{F}{x}(x_{i-1},y_{i-1})$\\
+		dy = $\diff{F}{y}(x_{i-1},y_{i-1})$\\
+		\eIf{dx == 0}
+		{
+			$x_i = x_{i-1}+h$\\
+			$\tilde y_i = y_{i-1}$\\
+			$G(a) = F(x_i,a)$\\
+			$y_i$ = Newton($G$, $\tilde y_i$)	
+		}
+		{
+			$\psi$ = atan(dy/dx)			//Richtung maximaler Ableitung\\
+			$\phi$ = $\psi-\frac{\pi}{2}$	//Richtung minimaler Ableitung\\
+			$\phi$ = correctPhi($\phi$)\\
+			$\psi$ = $\phi+\frac{\pi}{2}$	//psi mitkorrigieren\\
+			$\tilde x_i = x_{i-1}+h*cos(\phi)$\\
+			$\tilde y_i = y_{i-1}+h*sin(\phi)$\\
+			$G(a)$ = $F(\tilde x_i+a*cos(\psi),\tilde y_i+a*sin(\psi))$\\
+			s = Newton($G$, $\tilde y_i$)\\
+			$x_i = \tilde x_{i}+s*cos(\psi)$\\
+			$y_i = \tilde y_{i}+s*sin(\psi)$\\
+		}
+	}
+	\caption{Kurve B2}
+\end{algorithm}
 \subsection{Tests}
+
 
 \section{Implementierung von adaptiver Schrittweite}
 Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzuges durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
