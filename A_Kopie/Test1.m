@@ -6,7 +6,7 @@ dGx = @(x,y) 2*x*cos(x^2)
 dGy = @(x,y) -1
 
 d2Gxx = @(x,y) 2*cos(x^2) - 4*x^2*sin(x^2)
-d2Gxy = @(x,y) 0
+d2Gxy = @(x,y) -2
 d2Gyy = @(x,y) 0
 
 
@@ -22,6 +22,10 @@ d2Gyy = @(x,y) 0
 [x2 y2 z2 length2 steps2] = implicitCurveAdapt3(G, dGx, dGy, 0, 0, 200, 1, 10^-6,7.4*10^-2);
 [x3 y3 z3 length3 steps3] = implicitCurveAdapt4(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 0, 200, 1, 10^-6,1.3*10^-2);
 
+[x4 y4 z4 length4 steps4] = implicitCurveAdapt4(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 0, 200, 1, 10^-6,5*10^-2);
+[x5 y5 z5 length5 steps5] = implicitCurveAdapt4(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 0, 200, 1, 10^-6,2*10^-1);
+[x6 y6 z6 length6 steps6] = implicitCurveAdapt4(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 0, 200, 1, 10^-6,1);
+
 figure('DefaultAxesFontSize',14);
 figure(1)
 hold on
@@ -36,6 +40,15 @@ plot(x3,y3,'b','LineStyle','-','Marker','.','MarkerSize',16,'LineWidth',1);
 plot(x2,y2,'g','LineStyle','--','Marker','^','MarkerSize',4.5,'LineWidth',1,'MarkerFaceColor','g');
 hold off
 
+figure('DefaultAxesFontSize',14);
+figure(3)
+hold on
+plot(x4,y4,'b','LineStyle','-','Marker','.','MarkerSize',16,'LineWidth',1);
+plot(x6,y6,'g','LineStyle','--','Marker','^','MarkerSize',4.5,'LineWidth',1,'MarkerFaceColor','g');
+hold off
+
 steps1
 steps2
 steps3
+steps4
+steps5

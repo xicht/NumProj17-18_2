@@ -227,7 +227,7 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 Die Implementierung ist eine einfache Umsetzung von Algorithmus \ref{alg:A_const_h}.
 Fehlschlagen können dabei folgende 3 Punkte:
 \begin{itemize}
-	\item $\diff{F}{y}(x_{i-1},y_{i-1}$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.
+	\item $\diff{F}{y}(x_{i-1},y_{i-1})$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.
 	\item Das Newton verfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden indem man die Schrittweite reduziert.
 \end{itemize}
 \subsection{Tests}
@@ -240,11 +240,11 @@ Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird 
 \end{figure}
 Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
 \begin{align*}
-G(x,y) = sin(10*\pi*(sin(x)-y))
+G(x,y) = \sin(10*\pi*(sin(x)-y))
 \end{align*}
 mit Nullstellen
 \begin{align*}
-\left\lbrace (x,y)\in\mathbb{R}: G(x,y)=0 \right\rbrace = \left\lbrace (z, sin(z)+n*0.1): z \in \mathbb{R}, n \in \mathbb{N} \right\rbrace
+\left\lbrace (x,y)\in\mathbb{R}: G(x,y)=0 \right\rbrace = \left\lbrace (z, \sin(z)+n*0.1): z \in \mathbb{R}, n \in \mathbb{N} \right\rbrace
 \end{align*}
 Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der Algorithmus ab einer Schrittweite $\geq \frac{\pi}{8}$ falsche Nullstellen zu finden.
 \begin{figure}[h]
@@ -299,7 +299,7 @@ Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist 
 	}
 	\caption{Kurve B1}
 \end{algorithm}
-Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusagen wie lang die Kurve wird. In Algorithmus \ref{alg:A_const_h} läuft die Kurve von $\left\lbrace x_0\right\rbrace \times\mathbb{R}$ bis $\left\lbrace x_0+h*n\right\rbrace \times\mathbb{R}$. Das bedeutet für $m\in \mathbb{N}$, dass man einen Viertelkreis mit $n=m$ und $h=\frac{1}{m}$ zeichnen kann. Mit Algorithmus \ref{alg:B_V1} benötigt man dafür $n=\lceil m*\sqrt{2}\rceil$ und $h=\frac{1}{m}$, da der Richtungswechsel bei $x_i\approx sin(\frac{\pi}{4})$ stattfindet.
+Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusagen wie lang die Kurve wird. In Algorithmus \ref{alg:A_const_h} läuft die Kurve von $\left\lbrace x_0\right\rbrace \times\mathbb{R}$ bis $\left\lbrace x_0+h*n\right\rbrace \times\mathbb{R}$. Das bedeutet für $m\in \mathbb{N}$, dass man einen Viertelkreis mit $n=m$ und $h=\frac{1}{m}$ zeichnen kann. Mit Algorithmus \ref{alg:B_V1} benötigt man dafür $n=\lceil m*\sqrt{2}\rceil$ und $h=\frac{1}{m}$, da der Richtungswechsel bei $x_i\approx \sin(\frac{\pi}{4})$ stattfindet.
 \subsection{Implementierung Version 2}
 %das mit beliebiger Richtung
 Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ die Ableitung der impliziten Funktion $g'(x)=0$ ist.
@@ -341,7 +341,7 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 			$\tilde x_i = x_{i-1}+h*cos(\phi)$\\
 			$\tilde y_i = y_{i-1}+h*sin(\phi)$\\
 			$G(a)$ = $F(\tilde x_i+a*cos(\psi),\tilde y_i+a*sin(\psi))$\\
-			s = Newton($G$, $\tilde y_i$)\\
+			s = Newton($G$, 0)\\
 			$x_i = \tilde x_{i}+s*cos(\psi)$\\
 			$y_i = \tilde y_{i}+s*sin(\psi)$\\
 		}
@@ -467,7 +467,30 @@ Ein Listing des Codes der 4. Version befindet sich im Anhang.
 
 %vielleicht will man das auch in mit A und mit C aufteilen
 \subsection{Tests}
-Die Strategien wurden für die Funktion $F(x,y) := \sin(x^2)-y$ getestet.
+Die Strategien wurden für die Funktion $F(x,y) := \sin(x^2)-y$ getestet. Die Nullstellenmenge von $F$ ist also genau der Graph von $f(x)=\sin(x^2)$. Dabei war Parameter \verb|length| jeweils 200, die Schrittweite durfte zwischen 1 und $10^{-10}$ variieren. Der Parameter \verb|c| wurde so gewählt, dass die verschiedenen Strategie jeweils möglichst gleich viele Schritte benötigten, um die Ergebnisse sinnvoll vergleichen zu können.
+
+In Abbildung \ref{fig:br} sieht man, dass die gemischte Strategie besser ist als ein alleiniges Betrachten der Krümmung im vorherigen Punkt. Beim ersten Schritt ist startet man im Punkt $(0,f(0))$, wo $f''(x) = (\sin(x^2))''= 2\cdot \cos(x^2) - 4\cdot x^2 \cdot \sin(x^2)$ den Wert 2 hat, also im Vergleich zu den Werten von $f''$ klein ist. Daher wird eine zu große Schrittweite verwendet. Bei $x\approx2.521$ hat $f''$ ungefähr den Wert 0.160, was zu einer so großen Schrittweite führt, das ein Teil der Graphen übersprungen wird. Bei der gemischten Strategie war der Korrektorschritt dort aber dann so groß, dass die Schrittweite verkleinert wurde und es zu keinen Problemen kam. Später wird das Verhalten dieses Verfahren besser, weil die Funktionswerte von $f''$ tendenziell größer werden.
+
+In Abbildung \ref{fig:bg} sieht man, dass die gemischte Strategie dem alleinigen Betrachten der Länge des Korrektorschrittes deutlich überlegen ist. Insbesondere wenn die Schwingung von $\sin(x^2)$ schon sehr groß ist, kann es passieren, dass auch bei sehr großer Schrittweite der Korrektorschritt nur sehr klein ist, weil ''zufällig'' fast eine Nullstelle von $F$ getroffen wurde. Dabei können wie man beispielsweise bei $x\approx11$ und $x\approx13$ sieht, sogar mehrere Schwingungen von $f$ einfach ''übersehen'' werden.
+
+Auch bei deutlich kleinerem $c$ (zB um dem Faktor 10 kleiner) liegen die Schrittanzahlen in der Größenordnung von 400. Dort liefern die Abschätzung der Krümmung sowie die gemischte Strategie noch relativ brauchbare Ergebnisse. Die Schrittweitensteuerung anhand des Korrektorschrittes liefert dann hingegen unbrauchbare Ergebnisse.
+
+Die Bereich für die mögliche Schrittweite war mit $[1,10^{-10}]$ für diesen Test natürlich sehr groß gewählt. Tatsächlich wurden nie Schrittweiten kleiner $5\cdot 10^{-3}$ verwendet. Eine kleinere maximale Schrittweite hätte auch die Probleme der Strategie mit der Länge der Korrektorschrittes verringert. Völlig beseitigt hätte es aber die Probleme nie, da die Schwingung von $\sin(x^2)$ immer schneller werden.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/br}
+	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.1} mit $c=6 \cdot10^{-3}$ (rot, 1087 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
+	\label{fig:br}
+	
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/bg}
+	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.3} mit $c=7.4\cdot10^{-2}$ (grün, 1074 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
+	\label{fig:bg}
+\end{figure}
 
 \section{Implementierung von Niveaulinien}
 \subsection{Problemstellung und Idee der Implementierung}
