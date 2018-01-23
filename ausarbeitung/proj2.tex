@@ -337,53 +337,6 @@ h := \sqrt{\frac{8c}{|f''(x_0)| +\frac{8c}{h_{max}^2} }} \in (0,h_{max})
 \]
 wählen. Dann sind zwar keine der obigen Abschätzungen garantiert, man hat einen ersten Ansatz für adaptive Schrittweite. Zusätzlich dazu wird bei der Implementierung auch eine Mindestschrittweite vorgegeben, die nicht unterschritten werden darf. 
 
-\subsubsection{Abschätzung der Krümmung anhand dreier Punkte}\label{chap:5.1.2}
-Der vorherige Ansatz hat auch einige Nachteile: Es muss $F \in C^2$ sein und man muss die Ableitungen von $F$ zweiter Ordnung an die Funktion übergeben. Diese müssen auch alle in jedem Schritt ausgewertet werden (und höhere Ableitungen sind bei komplizierteren Funktionen oft relativ lange Ausdrücke). Es stellt sich also die Frage, ob man aus den schon berechneten Datenpunkten $f''$ abschätzen kann.
-
-Eine Motivation für das folgende Vorgehen kann folgende Aussage sein:
-
-\textbf{Satz:} Sei $f \in C^2((a,b))$ und $x \in (a,b)$. Dann ist 
-\[
-f''(x) = \lim_{h \to 0} \frac{f(x+h) -2f(x) + f(x-h)}{h^2}.
-\]
-
-\textbf{Beweis:}
-Es gilt:
-\begin{align*}
-f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h} \qquad  f''(x) = \lim_{h \to 0} \frac{f'(x+h)-f'(x)}{h}
-\end{align*}
-Da nach Vorraussetzung alle diese Funktionsgrenzwerte existieren, ergibt Einsetzen:
-\begin{align*}
-f''(x) &= \lim_{h \to 0} \frac{\lim_{h \to 0} \frac{f(x+h)-f(x)}{h}-\lim_{h \to 0} \frac{f(x+2h)-f(x+h)}{h}}{h} = \\
-&=\lim_{h \to 0}  \frac{\frac{f(x+h)-f(x)}{h}- \frac{f(x+2h)-f(x+h)}{h}}{h} = \lim_{h \to 0} \frac{f(x+2h) -2f(x+h) + f(x)}{h^2}.
-\end{align*}
-Wegen der vorausgesetzten Stetigkeit der zweiten Ableitung ist $\lim_{h \to 0} f''(x-h)=f''(x)$, womit die Aussage aus der obigen Gleichheit folgt. \hfill $\blacksquare$
-
-Daraus ergibt sich, dass bei konstanter Schrittweite $h$ folgender Ausdruck ein sinnvolle Abschätzung für die Krümmung in $x_i$ ist:
-\[
-\frac{f(x_{i-2})-2f(x_{i-1})+f(x_i)}{h^2}.
-\]
-
-Ist die Schrittweite nicht konstant, ist diese Abschätzung für Krümmung offensichtlich nicht mehr sinnvoll. Es ist also eine Ausdruck gesucht, der auch für variable Schrittweite funktioniert:
-
-Heuristisch ist $\frac{f(x_1)-f(x_2)}{x_1-x_2}$ eine bessere Schätzung für $f'((x_1+x_2)/2)$ als etwa für $f'(x_1)$ oder $f'(x_2)$. 
-
-Betrachtet man nämlich den Ausdruck. $\frac{f(x_1)-f(x_2)}{x_2-x_1}$  als Näherung von  $f'((x_1+x_2)/2)$ entspricht er genau eine Auswertung des zentralen Differenzeinquotienten, der quadratische Konvergenzordnung hat, mit $h:= (x_1-x_2)/2$. Als Näherung von $f'(x_1)$ entspricht der Ausdruck hingegen der Auswertung des einsteitigen Differenzenquotienten, der lediglich lineare Konvergenzordnung hat, mit einem doppelt so großen $h$.
-
-Seien nun $x_1 < x_2 < x_3$ vorgegeben und wendet man vorherige Überlegung für die Annäherung der ersten Ableitungen für $x_1, x,2$ sowie $x_2,x_3$ an und schreibt das Ergebnis in einen Differenzenquotienten erhält man folgende Näherung für die Krümmung:
-\begin{align*}
-k(x_1,x_2,x_3) :=  \frac{\frac{f(x_1)-f(x_2)}{x_1-x_2} - \frac{f(x_2)-f(x_3)}{x_2-x_3}}{\frac{x_1+x_2}{2} - \frac{x_2+x_3}{2}  } 
-=
-2 \frac{(f(x_1)-f(x_2))(x_2-x_3) + (f(x_2)-f(x_3))(x_2-x_1)}{(x_1-x_2)(x_2-x_3)(x_1-x_3)}
-\end{align*}
-
-Mit dem Mittelwertsatz der Differenzialrechnung kann man auch leicht zeigen, dass es ein $\xi \in (x_1,x_3)$ gibt, sodass $f''(\xi) = k(x_1,x_2,x_3)$. 
-
-Dieses Verfahren ist offenbar für die ersten zwei Schritte noch nicht anwendbar. Das ist aber nicht schlimm, weil es kein deutlicher Nachteil ist, wenn man diese einfach mit minimaler Schrittweite durchführt. Es gibt aber zwei relevantere Probleme:
-
-Erstens, für die Abschätzung aus \eqref{eq:absch_h} benötigt man (bei aktuellen Bezeichnungen)  $\sup_{x \in [x_3,x_4]} |f''(x)|$. Die Methode aus dem vorherigen Abschnitt liefert $f''(x_3)$, was tendenziell eine bessere Abschätzung für dieses Supremum sein wird, als das $f''(\xi)$ mit $\xi \in (x_1,x_3)$ von dieser Methode.
-
-Zweitens, ist diese Methode nicht gut umsetzbar, wenn man das Koordinatensystem dreht.
 
 \subsubsection{Schrittweitensteuerung durch Länge der Korrektorschrittes}\label{chap:5.1.3}
 Der Prediktor tut nichts anderes als eine Tangente $t_i(x)$ entlang von $f$ durch den Punkt $(x_i,f(x_i))$ zu legen und anhand dessen einen Punkt $(x_{i+1},\tilde{y}_{i+1})$ zu berechnen, der dann durch einen Korrektorschritt zum Punkt $(x_{i+1},f(x_{i+1}))$ korrigiert wird. Bezeichne $d:= |f(x_{i+1})-\tilde{y}_{i+1}|$ die Länge des Korrektorschrittes. 
@@ -434,9 +387,9 @@ Die Ausgabe-Daten sind:
 Es sind folgende Funktionen implementiert worden:
 \begin{enumerate}
 	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.1} sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
-	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.2} sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
-	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.3} mit Reduktion der Schrittweite um den Faktor $\sqrt{d/c}$, falls $d>5c$ sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
-	\item Eine Kombination der Kriterien aus 1. und 3.
+	%\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.2} sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
+	\item Adaptive Schrittweite nach Kapitel \ref{chap:5.1.3} mit Reduktion der Schrittweite um den Faktor $\sqrt{d/c}$, falls $d>c$ sowie Halbierung der Schrittweite, falls das Newton-Verfahren nicht konvergiert,
+	\item Eine Kombination der Kriterien aus den beiden vorherigen Kriterien, wobei das zweite erst bei $d>5c$ greift.
 \end{enumerate}
 
 Ein Listing des Codes der 4. Version befindet sich im Anhang. 
