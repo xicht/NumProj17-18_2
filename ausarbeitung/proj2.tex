@@ -218,7 +218,7 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 	{
 		$x_i = x_{i-1}+h$\\
 		$df = -\frac{\diff{F}{x}(x_{i-1},y_{i-1})}{\diff{F}{y}(x_{i-1},y_{i-1})}$\\
-		$\tilde y_i = x_{i-1}+h*df$\\
+		$\tilde y_i = y_{i-1}+h*df$\\
 		$G(a) = F(x_i,a)$\\
 		$y_i$ = Newton($G$, $\tilde y_i$)
 	}
@@ -292,7 +292,7 @@ Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist 
 		}
 		{
 			$x_i = x_{i-1}+h$\\
-			$\tilde y_i = x_{i-1}+h*df$\\
+			$\tilde y_i = y_{i-1}+h*df$\\
 			$G(a) = F(x_i,a)$\\
 			$y_i$ = Newton($G$, $\tilde y_i$)
 		}
@@ -300,9 +300,54 @@ Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist 
 	\caption{Kurve B1}
 \end{algorithm}
 Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusagen wie lang die Kurve wird. In Algorithmus \ref{alg:A_const_h} läuft die Kurve von $\left\lbrace x_0\right\rbrace \times\mathbb{R}$ bis $\left\lbrace x_0+h*n\right\rbrace \times\mathbb{R}$. Das bedeutet für $m\in \mathbb{N}$, dass man einen Viertelkreis mit $n=m$ und $h=\frac{1}{m}$ zeichnen kann. Mit Algorithmus \ref{alg:B_V1} benötigt man dafür $n=\lceil m*\sqrt{2}\rceil$ und $h=\frac{1}{m}$, da der Richtungswechsel bei $x_i\approx sin(\frac{\pi}{4})$ stattfindet.
-\subsection{Implementierung von Aufgabe b Version 2}
+\subsection{Implementierung Version 2}
 %das mit beliebiger Richtung
+Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ die Ableitung der impliziten Funktion $g'(x)=0$ ist.
+Dies ist einfach zu verifizieren, da
+\begin{align}
+	t_\phi(x,y) = (x*cos(\phi)-y*sin(\phi), x*sin(\phi)+y*cos(\phi))\\
+	g'(x) = -\frac{\diff{G}{x}(x,y)}{\diff{G}{y}(x,y)}\\
+	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))*cos(\phi)+\diff{F}{y}(t_\phi(x,y))*sin(\phi)=c(x,y)*sin(\phi + \psi(x,y))\\
+	\diff{G}{y}(x,y)=c(x,y)*cos(\phi + \psi(x,y))
+\end{align}
+Dadurch ist nun $h*n$ annähernd die Kurvenlänge und die Genauigkeit des Prediktorschritts ist unabhängig von der ersten Ableitung von $F$.
+Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine eindeutige Richtung vorgegeben ist, müssen andere Punkte dafür herangezogen werden. Mögliche Ansätze sind u.a. positives Skalarprodukt zwischen aktuellem und letzten Richtungsvektor oder minimale Differenz zwischen aktuellem und letzten $\phi$.
 
+\begin{algorithm}[h]
+	\label{alg:B_V2}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$...Funktion\\
+		$(x_0,y_0)$...Startpunkt\\
+		$h$...Schrittweite\\
+		$n$...Schrittzahl}
+	\Output{$(x_j,y_j)_{j\in \left[1,n\right] }$}
+	\For {i = 1 to n} 
+	{
+		dx = $\diff{F}{x}(x_{i-1},y_{i-1})$\\
+		dy = $\diff{F}{y}(x_{i-1},y_{i-1})$\\
+		\eIf{dx == 0}
+		{
+			$x_i = x_{i-1}+h$\\
+			$\tilde y_i = y_{i-1}$\\
+			$G(a) = F(x_i,a)$\\
+			$y_i$ = Newton($G$, $\tilde y_i$)	
+		}
+		{
+			$\psi$ = atan(dy/dx)			//Richtung maximaler Ableitung\\
+			$\phi$ = $\psi-\frac{\pi}{2}$	//Richtung minimaler Ableitung\\
+			$\phi$ = correctPhi($\phi$)\\
+			$\psi$ = $\phi+\frac{\pi}{2}$	//psi mitkorrigieren\\
+			$\tilde x_i = x_{i-1}+h*cos(\phi)$\\
+			$\tilde y_i = y_{i-1}+h*sin(\phi)$\\
+			$G(a)$ = $F(\tilde x_i+a*cos(\psi),\tilde y_i+a*sin(\psi))$\\
+			s = Newton($G$, $\tilde y_i$)\\
+			$x_i = \tilde x_{i}+s*cos(\psi)$\\
+			$y_i = \tilde y_{i}+s*sin(\psi)$\\
+		}
+	}
+	\caption{Kurve B2}
+\end{algorithm}
 \subsection{Tests}
 
 
