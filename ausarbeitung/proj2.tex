@@ -299,17 +299,54 @@ Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist 
 \end{algorithm}
 Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusagen wie lang die Kurve wird. In Algorithmus \ref{alg:A_const_h} läuft die Kurve von $\left\lbrace x_0\right\rbrace \times\mathbb{R}$ bis $\left\lbrace x_0+h*n\right\rbrace \times\mathbb{R}$. Das bedeutet für $m\in \mathbb{N}$, dass man einen Viertelkreis mit $n=m$ und $h=\frac{1}{m}$ zeichnen kann. Mit Algorithmus \ref{alg:B_V1} benötigt man dafür $n=\lceil m*\sqrt{2}\rceil$ und $h=\frac{1}{m}$, da der Richtungswechsel bei $x_i\approx \sin(\frac{\pi}{4})$ stattfindet.
 \subsection{Implementierung Version 2}
-%das mit beliebiger Richtung
-Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ die Ableitung der impliziten Funktion $g'(x)=0$ ist.
-Dies ist einfach zu verifizieren, da
-\begin{align}
-	t_\phi(x,y) = (x*\cos(\phi)-y*\sin(\phi), x*\sin(\phi)+y*\cos(\phi))\\
-	g'(x) = -\frac{\diff{G}{x}(x,y)}{\diff{G}{y}(x,y)}\\
-	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))*\cos(\phi)+\diff{F}{y}(t_\phi(x,y))*\sin(\phi)=c(x,y)*\sin(\phi + \psi(x,y))\\
-	\diff{G}{y}(x,y)=c(x,y)*\cos(\phi + \psi(x,y))
-\end{align}
-Dadurch ist nun $h*n$ annähernd die Kurvenlänge und die Genauigkeit des Prediktorschritts ist unabhängig von der ersten Ableitung von $F$.
-Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine eindeutige Richtung vorgegeben ist, müssen andere Punkte dafür herangezogen werden. Mögliche Ansätze sind u.a. positives Skalarprodukt zwischen aktuellem und letzten Richtungsvektor oder minimale Differenz zwischen aktuellem und letzten $\phi$.
+Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ für die Ableitung der impliziten Funktion $g'(x)=0$ gilt.
+
+Es sei $\diff{F}{x} \neq 0 \lor \diff{F}{y} \neq 0$ vorausgesetzt. Daraus folgt sofort $\norm{DF(x_0,y_0)}{2} \neq 0$. Sei für $\phi \in \R$ eine Koordinatentransformation:
+\[
+t_\phi^{-1} : \R^2 \to \R^2 : (x,y) \mapsto \binom{x\cos\phi + y\sin\phi}{-x\sin\phi + y\cos\phi} =: \binom{\tilde{x}}{\tilde{y}}.
+\]
+Es sind also $\tilde{x}$ und $\tilde{y}$ die Koordinaten der neuen Basis; bezeichne insbesondere $(\tilde{x_0},\tilde{y_0}) := t_\phi^{-1}(x_0,y_0)$. Es ist $t_\phi^{-1}$ eine durch eine orthognale Matrix bestimmte lineare Abbildung, also erhält man die Inverse sofort durch Transponieren der Matrix:
+\[
+(t_\phi^{-1})^{-1} = t_\phi : \R^2 \to \R^2 : (\tilde{x},\tilde{y}) \mapsto \binom{\tilde{x}\cos\phi - \tilde{y}\sin\phi}{\tilde{x}\sin\phi + \tilde{y}\cos\phi}.
+\]
+Sei $G_\phi(\tilde{x},\tilde{y}) := F(t_\phi((\tilde{x},\tilde{y}))$. Da die Transformation orthogonal ist, bleibt für alle $\phi$ die Norm der Jocobi-Matrix konstant, das heißt: $\norm{DG_\phi}{2}=\norm{DF}{2}$. Daraus folgt insbesondere auch, dass für alle $\phi$ gilt: $\diff{G}{\tilde{x}}(\tilde{x_0},\tilde{y_0}) = 0 \implies \diff{G}{\tilde{y}}(\tilde{x_0},\tilde{y_0}) \neq 0$. 
+
+Da die Norm der Jacobi-Matrix nicht von $\phi$ abhängt, gilt:
+\[
+\left| \diff{G_\phi}{y}(x_0,y_0) \right| = \norm{DF(x_0,y_0)}{2} \sqrt{1-\left(\diff{G_\phi}{x}(x_0,y_0)\right)^2}
+\]
+
+Da für die implizite Funktion $g_\phi$ gilt $g_\phi'(\tilde{x}) = - \diff{G}{\tilde{x}}(x,g_\phi(x)) / \diff{G}{\tilde{y}}(x,g_\phi(x))$ folgt
+\[
+g'(\tilde{x_0}) = 0 \quad\iff\quad \diff{G_\phi}{\tilde{x}}=0 \quad\iff\quad \left|\diff{G_\phi}{\tilde{y}}\right| \;\text{maximal},
+\]
+wobei hier wegen $\diff{G}{\tilde{x}}(\tilde{x_0},\tilde{y_0}) = 0 \implies \diff{G}{\tilde{y}}(\tilde{x_0},\tilde{y_0}) \neq 0$ nie durch 0 dividiert wurde.
+
+Mit der Kettenregel erhält man nun, wobei $(t_\phi)_x$ die $x$-Komponente von $t_\phi$ bezeichnet:
+\begin{align*}
+\diff{G}{\tilde{x}}(\tilde{x},\tilde{y}) &= 
+\diff{}{\tilde{x}} \left(  F(t_\phi(\tilde{x},\tilde{y})) \right) = \diff{F}{x}(t_\phi(\tilde{x},\tilde{y})) \diff{(t_\phi)_x(\tilde{x},\tilde{y})}{\tilde{x}}+\diff{F}{y}(t_\phi(\tilde{x},\tilde{y}))\diff{(t_\phi)_y(\tilde{x},\tilde{y})}{{\tilde{y}}} \\&=
+\diff{F}{x}(x,y) \cos(\phi)+\diff{F}{y}(x,y)\sin(\phi)
+\end{align*}
+Es gilt dann
+\begin{align*}
+\diff{G}{\tilde{x}}(\tilde{x_0},\tilde{y_0}) = 0 &\iff  \diff{F}{x}(x,y) \cos(\phi) = -\diff{F}{y}(x,y)\sin(\phi) \\
+&\iff -\frac{\diff{F}{x}(x_0,y_0)}{\diff{F}{y}(x_0,y_0)}  = \frac{\sin(\phi)}{\cos(\phi)} \\
+&\iff f'(x_0) = \tan(\phi)\\
+&\iff \phi = \arctan(f'(x_0))
+\end{align*}
+Das Problem ist also lösbar, wenn man $\phi=\arctan(f'(x_0))$ wählt. Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine eindeutige Richtung vorgegeben ist, müssen andere Punkte dafür herangezogen werden. Mögliche Ansätze sind u.a. positives Skalarprodukt zwischen aktuellem und letzten Richtungsvektor oder minimale Differenz zwischen aktuellem und letzten $\phi$.
+
+
+
+%Dies ist einfach zu verifizieren, da
+%\begin{align}
+%	t_\phi(x,y) = (x\cos(\phi)-y\sin(\phi), x\sin(\phi)+y\cos(\phi))\\
+%	g'(x) = -\frac{\diff{G}{x}(x,y)}{\diff{G}{y}(x,y)}\\
+%	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))\cos(\phi)+\diff{F}{y}(t_\phi(x,y))\sin(\phi)=c(x,y)\sin(\phi + \psi(x,y))\\
+%	\diff{G}{y}(x,y)=c(x,y)\cos(\phi + \psi(x,y))
+%\end{align}
+%Dadurch ist nun $h*n$ annähernd die Kurvenlänge und die Genauigkeit des Prediktorschritts ist unabhängig von der ersten Ableitung von $F$.
 
 \begin{algorithm}[h]
 	\label{alg:B_V2}
@@ -430,7 +467,7 @@ Es ergeben sich folgende mögliche Strategien:
 	\item Versuchen, die Krümmung von $f$ aus den letzten Punkten zu schätzen 
 	\item Die Differenz von Prediktor und Korrektor betrachten
 \end{enumerate}
-
+Die oben vorgestellten Strategien sind derart gewählt, dass sie sich völlig problemlos von a auf b bzw c erweitern lassen.
 
 \subsubsection{Abschätzung der Schrittweite anhand der Krümmung von $f$}\label{chap:5.1.1}
 
@@ -581,7 +618,6 @@ Man sieht in Abbildung \ref{fig:fehler1}, dass die Fehler bei allen Methoden mit
 
 Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser. Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
 
-
 \section{Implementierung von Niveaulinien}
 \subsection{Problemstellung und Idee der Implementierung}
 
@@ -633,8 +669,8 @@ implementiert. Dabei sind:
 Da die Anzahl der Datenpunkte für unterschiedliche Niveaulinien sehr unterschiedlich sein kann (zB wegen unterschiedlicher Länge oder Krümmung) und man die jeweiligen Anzahl je nach Algorithmus im Vorhinein auch nicht weiß, ist es nicht sinnvoll, alle Vektoren der $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveau-Linien in gemeinsame Matrizen der Art $X, Y \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
 
 Die Implementierung der Nullstellensuche ist in Algorithmus \ref{alg:NSt} genauer beschrieben.
-\begin{algorithm}[ht]
-	\label{alg:Nst}
+\begin{algorithm}[h!]
+	\label{alg:NSt}
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
 	\Input{$F$...Funktion\\
