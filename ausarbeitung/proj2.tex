@@ -493,7 +493,7 @@ Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
 	\item Der Polygonzug soll die Nullstellenmenge möglichst gut approximieren.
 \end{enumerate}
 
-Die erste Problemstellung ist recht einfach zu lösen: Durch das Newton-Verfahren im Korrektor-Schritt ist $(x_i,y_i)$ extrem an einer Nullstelle -- die dabei bleibende geringe Abweichung wird auch nicht Schrittweite des Prediktors beeinflusst. Das einzige was hier zu tun ist, ist also die Schrittweite zu verkleinern, falls das Newton-Verfahren nicht konvergiert. 
+Die erste Problemstellung ist recht einfach zu lösen: Durch das Newton-Verfahren im Korrektor-Schritt ist $(x_i,y_i)$ extrem nah an einer Nullstelle -- die dabei bleibende geringe Abweichung wird auch nicht Schrittweite des Prediktors beeinflusst. Das einzige was hier zu tun ist, ist also die Schrittweite zu verkleinern, falls das Newton-Verfahren nicht konvergiert. 
 
 Die zweite Problemstellung ist die wesentlich interessanter, die im folgenden zu lösen versucht wird. Der Einfachheit halber werden mögliche Strategien für adaptive Schrittweite zuerst an der Implementierung aus Aufgabe a getestet, da das Koordinatensystem dort noch fest ist. Dann werden sie, falls möglich und sinnvoll, auf den allgemeinen Fall ausgeweitet.
 
@@ -708,8 +708,8 @@ implementiert. Dabei sind:
 
 Da die Anzahl der Datenpunkte für unterschiedliche Niveaulinien sehr unterschiedlich sein kann (zB wegen unterschiedlicher Länge oder Krümmung) und man die jeweiligen Anzahl je nach Algorithmus im Vorhinein auch nicht weiß, ist es nicht sinnvoll, alle Vektoren der $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveau-Linien in gemeinsame Matrizen der Art $X, Y \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
 
-Die Implementierung der Nullstellensuche ist in Algorithmus \ref{alg:NSt} genauer beschrieben.
-\begin{algorithm}[h!]
+Die Implementierung der Nullstellensuche ist in Algorithmus \ref{alg:NSt} genauer beschrieben.\\
+\begin{algorithm}[H]
 	\label{alg:NSt}
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
