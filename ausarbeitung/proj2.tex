@@ -533,6 +533,21 @@ Auch bei deutlich kleinerem $c$ (zB um dem Faktor 10 kleiner) liegen die Schritt
 
 Die Bereich für die mögliche Schrittweite war mit $[1,10^{-10}]$ für diesen Test natürlich sehr groß gewählt. Tatsächlich wurden nie Schrittweiten kleiner $5\cdot 10^{-3}$ verwendet. Eine kleinere maximale Schrittweite hätte auch die Probleme der Strategie mit der Länge der Korrektorschrittes verringert. Völlig beseitigt hätte es aber die Probleme nie, da die Schwingung von $\sin(x^2)$ immer schneller werden.
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/br}
+	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.1} mit $c=6 \cdot10^{-3}$ (rot, 1087 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
+	\label{fig:br}
+	
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/bg}
+	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.3} mit $c=7.4\cdot10^{-2}$ (grün, 1074 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
+	\label{fig:bg}
+\end{figure}
+
 \subsection{$L_1$-Norm des Fehlers}
 Im Vorherigen wurde nur qualitativ darauf geachtet, ob der Algorithmus grobe Fehler macht, aber in keiner Form quantitativ verglichen, welcher Polygonzug näher an $f$ ist, also zB wie groß die Fläche zwischen $f$ und dem Polygonzug ist.
 
@@ -541,6 +556,32 @@ Da wir uns bisher darauf einschränken, dass die Nullstellenmenge von $F$ im bet
 Schränkt man sich auf den Fall ein, dass $f(x)$ konkav ist, folgt sofort $p(x) \le f(x)$, also $|f(x)-p(x)|=f(x)-p(x)$.
 
 Es seien also $x_1<\cdots < x_n$ die $x$-Werte der bekannten Datenpunkte und $p$ der Polygonzug durch die Punkte $(x_i,f(x_i))_{i=1,\dots,n}$. Dann gilt für die $L_1$-Norm von $f-p$ auf $[x_1,x_n]$:
+
+\begin{align*}
+\norm{f-p}{1} &= \int_{x_1}^{x_n}\!\! f(x)-p(x) dx = \int_{x_1}^{x_n}\!\! f(x) dx - \sum_{i=1}^{n-1} \int_{x_i}^{x_{i+1}}\!\! p(x) dx \\
+&=  \int_{x_1}^{x_n}\!\! f(x) dx - \sum_{i=1}^{n-1} \frac{f(x_{i})+f(x_{i+1})}{2} (x_{i+1}-x_i)
+\end{align*}
+Die letzte Gleichheit folgt daraus, dass $p$ auf den Intervallen $[x_i,x_{i+1}]$ ein Polynom ersten Grades ist und daher von der Trapezregel exakt integriert wird. 
+
+Sei $F(x,y)= x^{10} +y^{10}-1$. Dann kann $F(x,y)=0$ auf $(-1,1)$ für $y>0$ durch die Funktion $f(x)= \sqrt[10]{1-x^{10}}$ aufgelöst werden. Wegen $f''(x) <0$ sieht man leicht, dass $f$ konkav ist. 
+
+Das Integral $ \int_{x_1}^{x_n}\!\! f(x) dx$ wurde mithilfe symbolischer Integration durch Matlab und anschließender Auswertung der Stammfunktion berechnet. Die symbolische Integration mit Matlab war notwendig, da die Stammfunktion nicht durch elementare Funktionen darstellbar ist (man benötigt die hypergeometrische Funktion). 
+
+Der Grund, warum hier $F$ so gewählt wurde (und nicht zB als $x^2+y^2-1$, bei die Stammfunktion von $f$ deutlich einfacher wäre) ist, dass es ein sehr einfaches Beispiel ist, wo $f$ konkav ist und eine sehr unterschiedliche Krümmung hat. 
+
+Es wurden dabei folgende vier Methoden verglichen\footnote{Das sind genau die Algorithmen wie vorher, sie werden hier nur nocheinmal aufgezählt, um klarzustellen, welche Spalte der Tabelle sich auf welche Methode bezieht.}:
+\begin{enumerate}
+	\item konstante Schrittweite                                                                                                                                                                                                                                                                                                              istitem adaptive Schrittweite anhand der Krümmung im Punkt $x_i$
+	\item adaptive Schrittweite anhand der Länge des Korrektorschrittes
+	\item adaptive Schrittweite anhand des gemischten Kriteriums
+\end{enumerate}
+Die Eingabeparameter wurden dabei jeweils so gewählt, dass die Schrittanzahl $n$ jeweils (bis auf eine Abweichung $\le 2\%$) gleich ist.
+
+Man sieht in Abbildung ...., dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{O}(n^{-2})$ gegen Null gehen. Da für äquidistante Stützstellen die Schrittweite $h$ proportional zu $n^{-1}$ ist, ist das nicht überraschend. Das entspricht nämlich genau der aus der Vorlesung bekannten (siehe Numerik-Skriptum Bsp 4.9) Konvergenzaussage der summierten Trapezregel: Der Fehler der Integrals geht mit $\mathcal{O}(h^2)$ gegen null.
+
+Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser. Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
+
+Die Tatsache, dass der relative Unterschied zwischen den Fehlern mit adaptiver Schrittweite und jenem bei konstanter Schrittweite bei wachsendem $n$ nicht bedeutend kleiner wird, spricht für die Tatsache dass die Algorithmen zur adaptiven Schrittweite auch bei sehr kleinen Schrittweiten noch gut funktionieren und nützlich sein können. Die kleinste verwendete Schrittweite bei adaptiver Schrittweite und $n=200.000$ betrug ......
 
 \begin{align*}
 \norm{f-p}{1} &= \int_{x_1}^{x_n}\!\! f(x)-p(x) dx = \int_{x_1}^{x_n}\!\! f(x) dx - \sum_{i=1}^{n-1} \int_{x_i}^{x_{i+1}}\!\! p(x) dx \\
@@ -567,20 +608,7 @@ Man sieht, dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{
 
 Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
 
-\begin{figure}[ht]
-	\centering
-	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/br}
-	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.1} mit $c=6 \cdot10^{-3}$ (rot, 1087 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
-	\label{fig:br}
-	
-\end{figure}
 
-\begin{figure}[ht]
-	\centering
-	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/bg}
-	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.3} mit $c=7.4\cdot10^{-2}$ (grün, 1074 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
-	\label{fig:bg}
-\end{figure}
 
 \section{Implementierung von Niveaulinien}
 \subsection{Problemstellung und Idee der Implementierung}
@@ -655,7 +683,7 @@ Die Schrittweite betrug $2\cdot 10^{-3}$ die Schrittanzahl 2000 für die ersten 
 
 \section{Anhang: Code-Listings}
 Der gesamte Code und dieses Ausarbeitung ist unter \url{https://github.com/xicht/NumProj17-18_2} auffindbar.
-\lstinputlisting[firstline=1, lastline=1000,caption=Implementierung der Nullstellensuche im $\R^2$]{code/findZero.m}
+%\lstinputlisting[firstline=1, lastline=1000,caption=Implementierung der Nullstellensuche im $\R^2$]{code/findZero.m}
 %man wird wohl nur einzelne Ausschnitte im Fließtext haben wollen
 
 
