@@ -45,7 +45,7 @@ while true %quasi eine for-schleife der art for k=0:infinity
         assert(abs(dx/dy) ~= Inf);
         
         %schrittweitenberechnung
-        if i<1
+        if i<=1
             currStepWidth= minStepWidth;
         else
             currStepWidth = sqrt(8*c/(abs(z(i-1))+8*c/maxStepWidth));
