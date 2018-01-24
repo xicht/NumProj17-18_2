@@ -1,4 +1,4 @@
-function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, curvelen, stepWidthMin, stepWidthMax, startDir )
+function [ x, y ] = implicitCurve_noCorr( F, dFx, dFy, x0, y0, curvelen, stepWidthMin, stepWidthMax, startDir )
 %implicitCurve Generiert eine Menge von Wertepaaren mit F(xi,yi)==0 und
 %xi=x0+stepWidth*i mit i aus 0 bis steps
 %
@@ -7,7 +7,6 @@ function [ x, y ] = implicitCurve( F, dFx, dFy, x0, y0, curvelen, stepWidthMin, 
 % x0,y0 Startpunkt, es muss F(x0,y0) == 0 gelten
 % Anzahl der zu berechnenten Wertepaare
 % Schrittweite an der x-Achse.
-
 
 assert(isZero(F(x0, y0)));
 assert(stepWidthMin <= stepWidthMax);
@@ -48,7 +47,6 @@ end
 function [ xr, yr, phi, chi, length ] = generateNextStep( F, dFx, dFy, x, y, i, stepWidth, startDir )
     dy = dFy(x(i-1), y(i-1));
     dx = dFx(x(i-1), y(i-1));
-global print_error
     
     if(dx == 0)
         assert(dy ~= 0);
@@ -56,7 +54,7 @@ global print_error
         yr = y(i-1);% - dx/dy * stepWidth;    %predictor, dx ist eh 0
         G = @(z)F(xr, z);
         g = @(z)dFy(xr, z);
-        yr = Newton(G, g, yr);            %corrector
+%        yr = Newton(G, g, yr);            %corrector
         chi = 0;
         phi = pi/2;
         length = stepWidth;
@@ -104,19 +102,11 @@ global print_error
 %        legend('G','gx', 'gy', 'g')
     
     
-        h = Newton(G, g, 0);            %corrector
+%        h = Newton(G, g, 0);            %corrector
         %h = fzero(G,0);
-
-      
-        xr = xr+ h*dir_ortho(1);
-        yr = yr+ h*dir_ortho(2);
-
-if(print_error == true)
-    th = 0:pi/50:2*pi;
-    xunit = 10*h * cos(th) + xr;
-    yunit = 10*h * sin(th) + yr;
-    plot(xunit, yunit,'g');
-end
+        
+%        xr = xr+ h*dir_ortho(1);
+%        yr = yr+ h*dir_ortho(2);
         chi = atan2(yr,xr)-atan2(y(i-1),x(i-1));
         length = stepWidth;
 %        figure(2);

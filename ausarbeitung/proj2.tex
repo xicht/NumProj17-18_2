@@ -15,7 +15,7 @@
 \usepackage{lineno}
 \usepackage{tabularx}
 \usepackage[linesnumbered,algoruled,boxed,lined]{algorithm2e}
-\usepackage{adjustbox}
+\usepackage{wrapfig}
 
 % links in pdf
 \usepackage[unicode,colorlinks=true,pagebackref=false]{hyperref}
@@ -226,11 +226,7 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 	\caption{Kurve A}
 \end{algorithm}
 Die Implementierung ist eine einfache Umsetzung von Algorithmus \ref{alg:A_const_h}.
-Fehlschlagen können dabei folgende 3 Punkte:
-\begin{itemize}
-	\item $\diff{F}{y}(x_{i-1},y_{i-1})$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.
-	\item Das Newton verfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden indem man die Schrittweite reduziert.
-\end{itemize}
+Fehlschlagen können dabei folgende Punkte. $\diff{F}{y}(x_{i-1},y_{i-1})$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.Das Newton verfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden indem man die Schrittweite reduziert.
 \subsection{Tests}
 Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird sehr ungenau, vor allem bei großen Schrittweiten. Siehe Abbildung \ref{fig:Halbkreis_a}.
 \begin{figure}[h]
@@ -239,6 +235,13 @@ Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird 
 \caption{Plot zweier Halbkreise mit Schrittweiten $10^{-3}$ und $0.2$}
 \label{fig:Halbkreis_a}
 \end{figure}
+
+\begin{wrapfigure}{R}{0.4\textwidth}
+	\centering
+	\includegraphics[width=0.4\textwidth]{plots/A/vieleSinuse.eps}
+	\caption{Illustration der Nullstellenmenge von $G$.}
+	\label{fig:vieleSinuse_a}
+\end{wrapfigure}
 Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
 \begin{align*}
 G(x,y) = \sin(10*\pi*(sin(x)-y))
@@ -248,13 +251,7 @@ mit Nullstellen
 \left\lbrace (x,y)\in\mathbb{R}: G(x,y)=0 \right\rbrace = \left\lbrace (z, \sin(z)+n*0.1): z \in \mathbb{R}, n \in \mathbb{N} \right\rbrace
 \end{align*}
 Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der Algorithmus ab einer Schrittweite $\geq \frac{\pi}{8}$ falsche Nullstellen zu finden.
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.85\linewidth]{plots/A/vieleSinuse.eps}
-\caption{Illustration der Nullstellenmenge von $G$.}
-\label{fig:vieleSinuse_a}
-\end{figure}
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.85\linewidth]{plots/A/vieleSinuse_Schrittweiten.eps}
 \caption{$G$, $x_0 = y_0 = 0$ dargestellt mit verschiedenen Schrittweiten.}
@@ -350,8 +347,23 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 	\caption{Kurve B2}
 \end{algorithm}
 \subsection{Tests}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\linewidth]{plots/B/VergleichKorrektur.eps}
+	\caption{Vergleich der Korrekturschrittgrößen zwischen V1 und V2 als 10-facher Radius der roten bzw grünen Kreise für die Funktion $F(x,y) = 0.2x^2+y^2-1$}
+	\label{fig:KorrVergleich_b}
+\end{figure}
+\begin{wrapfigure}{R}{0.4\textwidth}
+	\centering
+	\includegraphics[width=1\linewidth]{plots/B/VergleichKorrektur_2.eps}
+	\caption{Wie Abb. \ref{fig:KorrVergleich_b} mit $x^3-xy+x^2-1$}
+	\label{fig:KorrVergleich2_b}
+\end{wrapfigure}
+Abbildungen \ref{fig:KorrVergleich_b} und \ref{fig:KorrVergleich2_b} stellt die notwendigen Korrekturen nach dem Prediktor für beiden Algorithmen \ref{alg:B_V1} und \ref{alg:B_V2}. Man erkennt dabei, dass der Fehler an Stellen mit großer erster und zweiter Ableitung groß ist.
+Die Laufzeiten beider Algorithmen wurden nicht gemessen, sind aber in beiden Fällen für $\leq10000$ Itterationen nicht bemerkbar.
 
-
+\section{Aufgabe c}
+Wenn sich beide Ableitungen von $F$ $0$ annähern %todo
 \section{Implementierung von adaptiver Schrittweite}
 Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzuges durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
@@ -599,6 +611,7 @@ Die Schrittweite betrug $2\cdot 10^{-3}$ die Schrittanzahl 2000 für die ersten 
 \end{figure}
 
 \section{Anhang: Code-Listings}
+Der gesamte Code und dieses Ausarbeitung ist unter \url{https://github.com/xicht/NumProj17-18_2} auffindbar.
 \lstinputlisting[firstline=1, lastline=1000,caption=Implementierung der Nullstellensuche im $\R^2$]{code/findZero.m}
 %man wird wohl nur einzelne Ausschnitte im Fließtext haben wollen
 
