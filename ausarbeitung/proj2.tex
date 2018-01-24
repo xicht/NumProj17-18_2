@@ -244,7 +244,7 @@ Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird 
 \end{wrapfigure}
 Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
 \begin{align*}
-G(x,y) = \sin(10*\pi*(sin(x)-y))
+G(x,y) = \sin(10*\pi*(\sin(x)-y))
 \end{align*}
 mit Nullstellen
 \begin{align*}
@@ -303,10 +303,10 @@ Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusa
 Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ die Ableitung der impliziten Funktion $g'(x)=0$ ist.
 Dies ist einfach zu verifizieren, da
 \begin{align}
-	t_\phi(x,y) = (x*cos(\phi)-y*sin(\phi), x*sin(\phi)+y*cos(\phi))\\
+	t_\phi(x,y) = (x*\cos(\phi)-y*\sin(\phi), x*\sin(\phi)+y*\cos(\phi))\\
 	g'(x) = -\frac{\diff{G}{x}(x,y)}{\diff{G}{y}(x,y)}\\
-	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))*cos(\phi)+\diff{F}{y}(t_\phi(x,y))*sin(\phi)=c(x,y)*sin(\phi + \psi(x,y))\\
-	\diff{G}{y}(x,y)=c(x,y)*cos(\phi + \psi(x,y))
+	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))*\cos(\phi)+\diff{F}{y}(t_\phi(x,y))*\sin(\phi)=c(x,y)*\sin(\phi + \psi(x,y))\\
+	\diff{G}{y}(x,y)=c(x,y)*\cos(\phi + \psi(x,y))
 \end{align}
 Dadurch ist nun $h*n$ annähernd die Kurvenlänge und die Genauigkeit des Prediktorschritts ist unabhängig von der ersten Ableitung von $F$.
 Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine eindeutige Richtung vorgegeben ist, müssen andere Punkte dafür herangezogen werden. Mögliche Ansätze sind u.a. positives Skalarprodukt zwischen aktuellem und letzten Richtungsvektor oder minimale Differenz zwischen aktuellem und letzten $\phi$.
@@ -336,12 +336,12 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 			$\phi$ = $\psi-\frac{\pi}{2}$	//Richtung minimaler Ableitung\\
 			$\phi$ = correctPhi($\phi$)\\
 			$\psi$ = $\phi+\frac{\pi}{2}$	//psi mitkorrigieren\\
-			$\tilde x_i = x_{i-1}+h*cos(\phi)$\\
-			$\tilde y_i = y_{i-1}+h*sin(\phi)$\\
-			$G(a)$ = $F(\tilde x_i+a*cos(\psi),\tilde y_i+a*sin(\psi))$\\
+			$\tilde x_i = x_{i-1}+h*\cos(\phi)$\\
+			$\tilde y_i = y_{i-1}+h*\sin(\phi)$\\
+			$G(a)$ = $F(\tilde x_i+a*\cos(\psi),\tilde y_i+a*\sin(\psi))$\\
 			s = Newton($G$, 0)\\
-			$x_i = \tilde x_{i}+s*cos(\psi)$\\
-			$y_i = \tilde y_{i}+s*sin(\psi)$\\
+			$x_i = \tilde x_{i}+s*\cos(\psi)$\\
+			$y_i = \tilde y_{i}+s*\sin(\psi)$\\
 		}
 	}
 	\caption{Kurve B2}
@@ -363,9 +363,9 @@ Abbildungen \ref{fig:KorrVergleich_b} und \ref{fig:KorrVergleich2_b} stellt die 
 Die Laufzeiten beider Algorithmen wurden nicht gemessen, sind aber in beiden Fällen für $\leq10000$ Itterationen nicht bemerkbar.
 
 \section{Aufgabe c}
-Wenn sich beide Ableitungen von $F$ $0$ annähern %todo
+Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren an denen sich Kurven kreuzen oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen um an solchen stellen fortzufahren sind heuristische begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab.   
 \section{Implementierung von adaptiver Schrittweite}
-Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzuges durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
+Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzugs durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
 Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
 \begin{enumerate}
@@ -566,7 +566,7 @@ Es wird daher folgende Strategie verwendet:
 	\item Sei nun $\Psi : [0,1] \to \R^2 : t \mapsto \binom{m_x}{m_y} + t \binom{x-m_x}{y-m_y}$. Dann ist $ G:= \Psi \circ F : [0,1] \to \R$ stetig mit $G(0)>0$ und $G(1)<0$. Mithilfe des Bisektionsverfahrens kann man eine Nullstelle $t_0$ von $G$ finden.
 	\item Dann ist $\Psi(t_0) \in [a,b] \times [c,d]$ eine Nullstelle von $F$.
 \end{itemize} 
-Diese Strategie hat in unseren Tests immer die Nullstellen gefunden. Nullstellen die gleichzeitig Extremstellen der Funktion $F$ sind, können damit nur durch großen Zufall gefunden werden, da die Funktion bei ihnen keinen Vorzeichenwechsel macht. Das ist kein großer Mangel, da diese Nullstellen aber unterinteressant sind, denn dort ist $\diff{F}{x}=0$ und $\diff{F}{y}=0$, was sie als Startwerte eher unbrauchbar macht.
+Diese Strategie hat in unseren Tests immer die Nullstellen gefunden. Nullstellen die gleichzeitig Extremstellen der Funktion $F$ sind, können damit nur durch großen Zufall gefunden werden, da die Funktion bei ihnen keinen Vorzeichenwechsel macht. Das ist kein großer Mangel, da diese Nullstellen aber uninteressant sind, denn dort ist $\diff{F}{x}=0$ und $\diff{F}{y}=0$, was sie als Startwerte eher unbrauchbar macht.
 
 \subsection{Details der Implementierung}
 
