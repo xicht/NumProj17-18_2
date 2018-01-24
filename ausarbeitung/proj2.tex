@@ -199,10 +199,10 @@ Für $\frac{d}{dx}\left( \diff{F}{y}(x,f(x))  \right)$ erhält man analog eine �
 Die zweite Aussage folgt aus dem Satz von Taylor und der Tatsache, dass $f''$ als Komposition stetiger Funktionen stetig ist. \hfill $\blacksquare$
 
 \section{Aufgabe a}
-Das Ziel dieser Aufgabenstellung ist es den Graphen, der durch die Nullstellenmenge einer Funktion, numerisch anzunähern. Im ersten Schritt wollen wir dazu einem Gitter $x_j = x_0 + j*h, j \in \left\lbrace1...n\right\rbrace $ entlang x folgen. 
-Dazu soll die Funktion $F$ auf der gesamten betrachteten Menge die Bedingungen des Hauptsatzes über implizite Funktionen erfüllen und $F(x_0,y_0)=0$ sein. Damit wissen wir, dass $\forall j \in \left\lbrace1...n\right\rbrace: F(x_j,f(x_j)=0)$ gilt. Um $y_n = f(x_n)$ zu berechnen betrachte man mittels Mittelwertsatz
+Das Ziel dieser Aufgabenstellung ist es den Graphen, der durch die Nullstellenmenge einer Funktion, numerisch anzunähern. Im ersten Schritt wollen wir dazu einem Gitter $x_j = x_0 + j\cdot h, j \in \left\lbrace1...n\right\rbrace $ entlang $x$ folgen. 
+Dazu soll die Funktion $F$ auf der gesamten betrachteten Menge die Bedingungen des Hauptsatzes über implizite Funktionen erfüllen und $F(x_0,y_0)=0$ sein. Damit wissen wir, dass $\forall j \in \left\lbrace1...n\right\rbrace: F(x_j,f(x_j))=0$ gilt. Um $y_n = f(x_n)$ zu berechnen betrachte man mittels Mittelwertsatz
 \[
-f(x_{n+1})=f(x_n)+f'(x_n)*h+r_n, \left|r_n\right|\leq \sup\limits_{a,b \in \left[x_n,x_{n+1}\right]}\left|{f'(a)-f'(b)}\right|*h.
+f(x_{n+1})=f(x_n)+f'(x_n) \cdot h+r_n, \left|r_n\right|\leq \sup\limits_{a,b \in \left[x_n,x_{n+1}\right]}\left|{f'(a)-f'(b)}\right| \cdot h.
 \]
 Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug, so dass die Nullstelle für $F(x_{n+1},.)$ und somit $f(x_{n+1})$ mittels Newtonverfahren gefunden werden kann.
 \subsection{Implementierung}
@@ -226,7 +226,7 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 	\caption{Kurve A}
 \end{algorithm}
 Die Implementierung ist eine einfache Umsetzung von Algorithmus \ref{alg:A_const_h}.
-Fehlschlagen können dabei folgende Punkte. $\diff{F}{y}(x_{i-1},y_{i-1})$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.Das Newton verfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden indem man die Schrittweite reduziert.
+Fehlschlagen können dabei folgende Punkte. $\diff{F}{y}(x_{i-1},y_{i-1})$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.Das Newtonverfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden, indem man die Schrittweite reduziert.
 \subsection{Tests}
 Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird sehr ungenau, vor allem bei großen Schrittweiten. Siehe Abbildung \ref{fig:Halbkreis_a}.
 \begin{figure}[h]
@@ -244,11 +244,11 @@ Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird 
 \end{wrapfigure}
 Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
 \begin{align*}
-G(x,y) = \sin(10*\pi*(\sin(x)-y))
+G(x,y) = \sin(10\pi(\sin(x)-y))
 \end{align*}
 mit Nullstellen
 \begin{align*}
-\left\lbrace (x,y)\in\mathbb{R}: G(x,y)=0 \right\rbrace = \left\lbrace (z, \sin(z)+n*0.1): z \in \mathbb{R}, n \in \mathbb{N} \right\rbrace
+\left\lbrace (x,y)\in\mathbb{R}: G(x,y)=0 \right\rbrace = \left\lbrace (z, \sin(z)+n/10): z \in \mathbb{R}, n \in \mathbb{N} \right\rbrace
 \end{align*}
 Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der Algorithmus ab einer Schrittweite $\geq \frac{\pi}{8}$ falsche Nullstellen zu finden.
 \begin{figure}[H]
@@ -453,7 +453,7 @@ Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Po
 
 Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
 \begin{enumerate}
-	\item Die Datenpunkte $(x_i,y_i)$ sollen möglichst sein.
+	\item Die Datenpunkte $(x_i,y_i)$ sollen möglichst genau sein.
 	\item Der Polygonzug soll die Nullstellenmenge möglichst gut approximieren.
 \end{enumerate}
 
@@ -527,7 +527,7 @@ War nun $d > 4c$ folgt daraus sofort, dass die Ungleichung auf der linken Seite 
 
 Man sieht daraus auch, dass es die Toleranz für $d$ in der Größenordnung von $c$ wählen sollte und der Faktor, um dem man die Schrittweite gegebenenfalls verringert, proportional zu $\sqrt{d/c}$ sein sollte. Bei der Implementierung wird man zusätzlich fordern, dass der Faktor jedenfalls größer 2 sein muss, um nicht mehrmals hintereinander mit sehr ähnlichen Schrittweiten zu arbeiten. Außerdem wird man auch hier eine Mindestschrittweite festlegen.
 
-\subsection{Implementierungen}
+\subsection{Implementierungen}\label{kap:5.2}
 Da bei adaptiver Schrittweite für den Nutzer im Vorhinein nicht mehr absehbar ist, wie weit die Nullstellenmenge bei gegebener Schrittanzahl gezeichnet ist, wird nun die Länge des Polygonzuges als Abbruchkriterium verwendet.
 
 Die Funktionen haben also jetzt folgende Form:
@@ -560,8 +560,6 @@ Es sind folgende Funktionen implementiert worden:
 	\item Eine Kombination der Kriterien aus den beiden vorherigen Kriterien, wobei das zweite erst bei $d>5c$ greift.
 \end{enumerate}
 
-Ein Listing des Codes der 4. Version befindet sich im Anhang. 
-
 %vielleicht will man das auch in mit A und mit C aufteilen
 \subsection{Tests}
 Die Strategien wurden für die Funktion $F(x,y) := \sin(x^2)-y$ getestet. Die Nullstellenmenge von $F$ ist also genau der Graph von $f(x)=\sin(x^2)$. Dabei war Parameter \verb|length| jeweils 200, die Schrittweite durfte zwischen 1 und $10^{-10}$ variieren. Der Parameter \verb|c| wurde so gewählt, dass die verschiedenen Strategie jeweils möglichst gleich viele Schritte benötigten, um die Ergebnisse sinnvoll vergleichen zu können.
@@ -592,7 +590,7 @@ Die Bereich für die mögliche Schrittweite war mit $[1,10^{-10}]$ für diesen T
 \subsection{$L_1$-Norm des Fehlers}
 Im Vorherigen wurde nur qualitativ darauf geachtet, ob der Algorithmus grobe Fehler macht, aber in keiner Form quantitativ verglichen, welcher Polygonzug näher an $f$ ist, also zB wie groß die Fläche zwischen $f$ und dem Polygonzug ist.
 
-Da wir uns bisher darauf einschränken, dass die Nullstellenmenge von $F$ im betrachten Bereich durch ein $f(x)$ auflösbar ist, folgt dass sowohl $f$ als auch der Polygonzug $p$ wohldefinierte Funktionen von $x$ sind und die Fläche genau die $L_1$-Norm der Funktion $f-p$ ist. Diese ist aber im Allgemeinen nicht einfach zu berechnen, weil man nicht weiß, wo $f-p$ Vorzeichenwechsel hat. 
+Da wir uns bisher darauf einschränken, dass die Nullstellenmenge von $F$ im betrachten Bereich durch ein $f(x)$ auflösbar ist, folgt dass sowohl $f$ als auch der Polygonzug $p$ wohldefinierte Funktionen von $x$ sind und die Fläche zwischen den Funktionsgraphen genau die $L_1$-Norm der Funktion $f-p$ ist. Diese ist aber im Allgemeinen nicht einfach zu berechnen, weil man nicht weiß, wo $f-p$ Vorzeichenwechsel hat. 
 
 Schränkt man sich auf den Fall ein, dass $f(x)$ konkav ist, folgt sofort $p(x) \le f(x)$, also $|f(x)-p(x)|=f(x)-p(x)$.
 
@@ -608,47 +606,21 @@ Sei $F(x,y)= x^{10} +y^{10}-1$. Dann kann $F(x,y)=0$ auf $(-1,1)$ für $y>0$ dur
 
 Das Integral $ \int_{x_1}^{x_n}\!\! f(x) dx$ wurde mithilfe symbolischer Integration durch Matlab und anschließender Auswertung der Stammfunktion berechnet. Die symbolische Integration mit Matlab war notwendig, da die Stammfunktion nicht durch elementare Funktionen darstellbar ist (man benötigt die hypergeometrische Funktion). 
 
-Der Grund, warum hier $F$ so gewählt wurde (und nicht zB als $x^2+y^2-1$, bei die Stammfunktion von $f$ deutlich einfacher wäre) ist, dass es ein sehr einfaches Beispiel ist, wo $f$ konkav ist und eine sehr unterschiedliche Krümmung hat. 
+Der Grund, warum hier $F$ so gewählt wurde (und nicht zB als $x^2+y^2-1$, wo die Stammfunktion von $f$ deutlich einfacher wäre) ist, dass $F$ ein sehr einfaches Beispiel ist, bei dem $f$ konkav ist und eine sehr unterschiedliche Krümmungen auftreten. 
 
-Es wurden dabei folgende vier Methoden verglichen\footnote{Das sind genau die Algorithmen wie vorher, sie werden hier nur nocheinmal aufgezählt, um klarzustellen, welche Spalte der Tabelle sich auf welche Methode bezieht.}:
-\begin{enumerate}
-	\item konstante Schrittweite                                                                                                                                                                                                                                                                                                              istitem adaptive Schrittweite anhand der Krümmung im Punkt $x_i$
-	\item adaptive Schrittweite anhand der Länge des Korrektorschrittes
-	\item adaptive Schrittweite anhand des gemischten Kriteriums
-\end{enumerate}
-Die Eingabeparameter wurden dabei jeweils so gewählt, dass die Schrittanzahl $n$ jeweils (bis auf eine Abweichung $\le 2\%$) gleich ist.
-
-Man sieht in Abbildung ...., dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{O}(n^{-2})$ gegen Null gehen. Da für äquidistante Stützstellen die Schrittweite $h$ proportional zu $n^{-1}$ ist, ist das nicht überraschend. Das entspricht nämlich genau der aus der Vorlesung bekannten (siehe Numerik-Skriptum Bsp 4.9) Konvergenzaussage der summierten Trapezregel: Der Fehler der Integrals geht mit $\mathcal{O}(h^2)$ gegen null.
-
-Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser. Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
-
-Die Tatsache, dass der relative Unterschied zwischen den Fehlern mit adaptiver Schrittweite und jenem bei konstanter Schrittweite bei wachsendem $n$ nicht bedeutend kleiner wird, spricht für die Tatsache dass die Algorithmen zur adaptiven Schrittweite auch bei sehr kleinen Schrittweiten noch gut funktionieren und nützlich sein können. Die kleinste verwendete Schrittweite bei adaptiver Schrittweite und $n=200.000$ betrug ......
-
-\begin{align*}
-\norm{f-p}{1} &= \int_{x_1}^{x_n}\!\! f(x)-p(x) dx = \int_{x_1}^{x_n}\!\! f(x) dx - \sum_{i=1}^{n-1} \int_{x_i}^{x_{i+1}}\!\! p(x) dx \\
-&=  \int_{x_1}^{x_n}\!\! f(x) dx - \sum_{i=1}^{n-1} \frac{f(x_{i})+f(x_{i+1})}{2} (x_{i+1}-x_i)
-\end{align*}
-Die letzte Gleichheit folgt daraus, dass $p$ auf den Intervallen $[x_i,x_{i+1}]$ ein Polynom ersten Grades ist und daher von der Trapezregel exakt integriert wird. 
-
-Sei $F(x,y)= x^{10} +y^{10}-1$. Dann kann $F(x,y)=0$ auf $(-1,1)$ für $y>0$ durch die Funktion $f(x)= \sqrt[10]{1-x^{10}}$ aufgelöst werden. Wegen $f''(x) <0$ sieht man leicht, dass $f$ konkav ist. 
-
-Das Integral $ \int_{x_1}^{x_n}\!\! f(x) dx$ wurde mithilfe symbolischer Integration durch Matlab und anschließender Auswertung der Stammfunktion berechnet. Die symbolische Integration mit Matlab war notwendig, da die Stammfunktion nicht durch elementare Funktionen darstellbar ist (man benötigt die hypergeometrische Funktion). 
-
-Der Grund, warum hier $F$ so gewählt wurde (und nicht zB als $x^2+y^2-1$, bei die Stammfunktion von $f$ deutlich einfacher wäre) ist, dass es ein sehr einfaches Beispiel ist, wo $f$ konkav ist und eine sehr unterschiedliche Krümmung hat. 
-
-Es wurden dabei folgende vier Methoden verglichen\footnote{Das sind genau die selben Algorithmen wie vorher, sie werden hier nur nocheinmal aufgezählt, um klarzustellen, welche Spalte der Tabelle sich auf welche Methode bezieht.}:
-\begin{enumerate}
-	\item konstante Schrittweite
-	\item adaptive Schrittweite anhand der Krümmung im Punkt $x_i$
-	\item adaptive Schrittweite anhand der Länge des Korrektorschrittes
-	\item adaptive Schrittweite anhand des gemischten Kriteriums
-\end{enumerate}
+Es wurden dabei die drei Methoden zur apativen Schrittweite aus Kapitel \ref{kap:5.2} mit dem Algorithmus mit konstanter Schrittweite verglichen. 
 Die Eingabeparameter wurden dabei jeweils so gewählt, dass die Schrittanzahl jeweils (bis auf eine Abweichung $\le 2\%$) gleich ist.
 
-Man sieht, dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{O}(h^2)$ gegen Null gehen. Für äquidistante Stützstellen ist das nicht überraschend, da dies genau der Konvergenzaussage der summierten Trapezregel entspricht (siehe Numerik-Skriptum Bsp 4.9). Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[trim = 0mm 0mm 0mm 0mm, clip, width=0.8\linewidth]{plots/adapt/fehlerplot1}
+	\caption{Vergleich der Strategien aus Kapitel \ref{kap:5.2} (Nummerierung der Methoden laut dortiger Aufzählung).}
+	\label{fig:fehler1}
+\end{figure}
 
-Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
+Man sieht in Abbildung \ref{fig:fehler1}, dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{O}(n^{-2})$ gegen Null gehen. Da für äquidistante Stützstellen die Schrittweite $h$ proportional zu $n^{-1}$ ist, ist das nicht überraschend. Das entspricht nämlich genau der aus der Vorlesung bekannten (siehe Numerik-Skriptum Bsp 4.9) Konvergenzaussage der summierten Trapezregel: Der Fehler der Integrals geht mit $\mathcal{O}(h^2)$ gegen null.
 
+Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser. Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
 
 
 \section{Implementierung von Niveaulinien}
@@ -671,14 +643,13 @@ Aus diesem Grund wurde ein Algorithmus implementiert, der in einem gegebenen Int
 
 Der wesentliche Schritt ist also, nach Möglichkeit Nullstellen von $F_j$ in $[a,b] \times [c,d]$ zu finden. Das Newton-Verfahren im $\R^n$ steht hier nicht zur Verfügung, da nur es für Funktionen $G: \R^n \to \R^n$ anwendbar ist. Wegen der Regularitätsforderung  an die Jacobi-Matrix von $G$, ist es auch nicht möglich etwa $G(x,y) : = \binom{F(x,y)}{0}$ oder $G(x,y) : = \binom{F(x,y)}{F(x,y)}$ zu setzen und damit das Newton-Verfahren zu verwenden.
 
-Es wird daher folgende Strategie verwendet:
-\begin{itemize}
-	\item Sei $m:= \binom{m_x}{m_y} := \binom{(a+b)/2}{(c+d)/2}$. Berechne $F(m)$. Falls $F(m)=0$ sind wir fertig, falls $F(m)<0$ betrachte $-F$. Wir können also im folgenden annehmen $F(m)>0$.
-	\item Werte mithilfe geeigneter Schleifen $F$ an verschiedenen $(x,y) \in [a,b]\times [c,d]$ aus, bis $(x,y)$ mit $F(x,y)\le 0$ gefunden wird. Tritt dies nicht ein, bricht der Algorithmus an der Stelle ohne Ergebnis ab. Ist $F(x,y)=0$ sind wir fertig. Wir können also im Folgenden annehmen, dass $F(x,y)<0$ ist.
-	\item Sei nun $\Psi : [0,1] \to \R^2 : t \mapsto \binom{m_x}{m_y} + t \binom{x-m_x}{y-m_y}$. Dann ist $ G:= \Psi \circ F : [0,1] \to \R$ stetig mit $G(0)>0$ und $G(1)<0$. Mithilfe des Bisektionsverfahrens kann man eine Nullstelle $t_0$ von $G$ finden.
-	\item Dann ist $\Psi(t_0) \in [a,b] \times [c,d]$ eine Nullstelle von $F$.
-\end{itemize} 
-Diese Strategie hat in unseren Tests immer die Nullstellen gefunden. Nullstellen die gleichzeitig Extremstellen der Funktion $F$ sind, können damit nur durch großen Zufall gefunden werden, da die Funktion bei ihnen keinen Vorzeichenwechsel macht. Das ist kein großer Mangel, da diese Nullstellen aber uninteressant sind, denn dort ist $\diff{F}{x}=0$ und $\diff{F}{y}=0$, was sie als Startwerte eher unbrauchbar macht.
+Es wird daher folgende Strategie verwendet: Es wird versucht im vorgeben Intervall Funktionswerte mit unterschiedlichem Vorzeichen zu finden, zB $(x_0,y_0)$ und $(x_1,y_1)$ sodass $F(x_0,y_0)>0$ und $F(x_1,y_1)<0$. 
+
+Dann wird das Problem auf ein Skalares reduziert, indem man eine die Verbindungsstrecke dieser beiden Punkte durch ein $\Psi : [0,1] \to \R^2 : t \mapsto \binom{x_0}{y_0} + t \binom{x_1-x_0}{y_1-y_0}$ parametrisiert und diese Parameterdarstellung mit $F$ zu einer Funktion $ G:= \Psi \circ F : [0,1] \to \R$ verkettet. 
+
+Da $G$ als Komposition steter Funktionen stetig ist und $G(0)>0$ sowie $G(1)<0$ gilt, kann man mit dem Bisektionsverfahren eine Nullstelle $t_0 \in [0,1]$ von $G$ finden. Dann ist $\Psi(t_0) \in [a,b] \times [c,d]$ eine Nullstelle von $F$.
+
+Diese Strategie hat in unseren Tests immer die Nullstellen gefunden. Nullstellen die gleichzeitig Extremstellen der Funktion $F$ sind, können damit allerdings nur durch großen Zufall gefunden werden, da die Funktion bei ihnen keinen Vorzeichenwechsel macht. Dies sind in vielen Fällen allerdings auch eher uninteressant, dort ist $\diff{F}{x}=0$ und $\diff{F}{y}=0$, was sie als Startwerte eher unbrauchbar macht. 
 
 \subsection{Details der Implementierung}
 
@@ -694,18 +665,48 @@ implementiert. Dabei sind:
 	\item  \verb|Steps| und \verb|StepWidth| sind ebenfalls Vektoren der Länge $k$ oder Skalare, die die Schrittanzahl bzw. Schrittweite übergeben.
 \end{itemize}
 
-Die Implementierung der Funktion sieht dann im Wesentlichen (Assertions etc. wurden im Listing weggelassen) so aus:
 
-\lstinputlisting[firstline=1, lastline=1000,caption=Ich bin ein Beispiel-Lisitng]{code/nivlines4.m}
+%\lstinputlisting[firstline=1, lastline=1000,caption=Ich bin ein Beispiel-Lisitng]{code/nivlines4.m}
 
 %das sind jetzt sehr informatik / matlab-syntax-lastige dinge, die man auch streichen kann
 %aber falls man den code wo einbindet sollte man es vlt erwähnt haben, damit die leute nicht über unbekannte syntax stolpern
 
-Da die Anzahl der Datenpunkte für unterschiedliche Niveaulinien sehr unterschiedlich sein kann (zB wegen unterschiedlicher Länge oder Krümmung) und man die jeweiligen Anzahl je nach Algorithmus im Vorhinein auch nicht weiß, ist es nicht sinnvoll, alle Vektoren der $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveau-Linien in gemeinsame Matrizen der Art $X, Y \in \R^{k \times maxSteps}$ zu schreiben.
+Da die Anzahl der Datenpunkte für unterschiedliche Niveaulinien sehr unterschiedlich sein kann (zB wegen unterschiedlicher Länge oder Krümmung) und man die jeweiligen Anzahl je nach Algorithmus im Vorhinein auch nicht weiß, ist es nicht sinnvoll, alle Vektoren der $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveau-Linien in gemeinsame Matrizen der Art $X, Y \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
 
-
-der Punkte für die einzelnen Niveaulinien in Matrix $X \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
-
+Die Implementierung der Nullstellensuche ist in Algorithmus \ref{alg:NSt} genauer beschrieben.
+\begin{algorithm}[ht]
+	\label{alg:Nst}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$...Funktion\\
+		$a,b,c,d$...Eckpunkte vom Intervall \\}
+	\Output{$(x_0,y_0)$ ...Nullstelle}
+	$m= (m_x,m_y) = ((a+b)/2,(c+d)/2)$ \\
+	
+	\If{isZero(F(m))}{ $(x_0,y_0)=(m_x,m_y)$ \\ return
+	}
+	\If{$F(m)<0$}{rufe die Funktion rekursiv mit $-F$ auf}
+	foundNegValue=false
+	iterations = 0
+	
+	\While{foundNegValue==false and iterations $\le$ maxNumberOfIerations}{
+		\For{passende Schleife mit $(x_i,y_i) \in [a,b]\times[c,d]$}
+		{\If{$F(x_i,y_i)<0$}
+			{foundNegValue=true\\ $(x,y)=(x_i,y_i)$ \\
+				break}
+			
+		}verkleinere Schrittweite der for-Schleife \\iterations = iterations+1
+	}
+	\If{foundNegValue==false}{Algorithmus erfolglos\\ return}
+	$Psi_x(t) = m_x + t*(x -m_x) $ //zB als Function-handle\\
+	$Psi_y(t) = m_y + t*(x -m_y) $ //zB als Function-handle\\
+	$G(t) = F(Psi_x(t),Psi_y(t)) $ //zB als Function-handle\\
+	$t_0$ = Bisektionsverfahren(G,0,1,epsZero) // Anfangsintervall $[0,1]$\\
+	$(x_0,y_0) = (Psi_x(t_0),Psi_x(t_0))$ \\
+	return
+	
+	\caption{Finde Nullstelle von $F$ in $[a,b]\times[c,d]$}
+\end{algorithm}
 \subsection{Tests}
 Sei %(x.^2+y.^2+10^-2).^-1 + ((x-0.5).^2+y.^2+10^-2).^-1
 \[
@@ -723,7 +724,7 @@ Die Schrittweite betrug $2\cdot 10^{-3}$ die Schrittanzahl 2000 für die ersten 
 \end{figure}
 
 \section{Anhang: Code-Listings}
-Der gesamte Code und dieses Ausarbeitung ist unter \url{https://github.com/xicht/NumProj17-18_2} auffindbar.
+Der gesamte Code und diese Ausarbeitung ist unter \url{https://github.com/xicht/NumProj17-18_2} auffindbar.
 %\lstinputlisting[firstline=1, lastline=1000,caption=Implementierung der Nullstellensuche im $\R^2$]{code/findZero.m}
 %man wird wohl nur einzelne Ausschnitte im Fließtext haben wollen
 
