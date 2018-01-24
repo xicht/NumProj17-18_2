@@ -347,13 +347,7 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 	\caption{Kurve B2}
 \end{algorithm}
 \subsection{Tests}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.85\linewidth]{plots/B/VergleichKorrektur.eps}
-	\caption{Vergleich der Korrekturschrittgrößen zwischen V1 und V2 als 10-facher Radius der roten bzw grünen Kreise für die Funktion $F(x,y) = 0.2x^2+y^2-1$}
-	\label{fig:KorrVergleich_b}
-\end{figure}
-\begin{wrapfigure}{R}{0.4\textwidth}
+\begin{wrapfigure}[12]{r}{0.4\textwidth}
 	\centering
 	\includegraphics[width=1\linewidth]{plots/B/VergleichKorrektur_2.eps}
 	\caption{Wie Abb. \ref{fig:KorrVergleich_b} mit $x^3-xy+x^2-1$}
@@ -361,10 +355,59 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 \end{wrapfigure}
 Abbildungen \ref{fig:KorrVergleich_b} und \ref{fig:KorrVergleich2_b} stellt die notwendigen Korrekturen nach dem Prediktor für beiden Algorithmen \ref{alg:B_V1} und \ref{alg:B_V2}. Man erkennt dabei, dass der Fehler an Stellen mit großer erster und zweiter Ableitung groß ist.
 Die Laufzeiten beider Algorithmen wurden nicht gemessen, sind aber in beiden Fällen für $\leq10000$ Itterationen nicht bemerkbar.
-
+Ein Fehlerbild, das bei zu großen Schrittweiten und vor allem bei Algorithmus \ref{alg:B_V1} aufgetreten ist das verlassen des Bereichs in dem die Nullstellen liegen. zB dass für $F(x,y)=x^2+y^2-1$ ein $x_n > 1$ wurde. Das Problem kann durch eine Sinnvolle Wahl der Schrittweite verhindert werden.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.75\linewidth]{plots/B/VergleichKorrektur.eps}
+	\caption{Vergleich der Korrekturschrittgrößen zwischen V1 und V2 als 10-facher Radius der roten bzw grünen Kreise für die Funktion $F(x,y) = 0.2x^2+y^2-1$}
+	\label{fig:KorrVergleich_b}
+\end{figure}
+\linebreak
 \section{Aufgabe c}
-Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren an denen sich Kurven kreuzen oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen um an solchen stellen fortzufahren sind heuristische begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab.   
-\section{Implementierung von adaptiver Schrittweite}
+Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren an denen sich die Kurve kreuzt oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen um an solchen stellen fortzufahren sind heuristische begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab. 
+\subsection{Kreuzung der Kurve}  
+Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nicht getroffen wird und damit einfach übersprungen wird. Siehe dazu Abbildung \ref{fig:nivlines}.
+Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie vom letzten Punkt aus die Schrittweite (mehr zu der Umsetzung in Sektion \ref{chap:Schrittweite}) zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung} der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
+\begin{algorithm}[h]
+	\label{alg:C_Kreuzung}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$...Funktion\\
+		$(x,y)_n$...bisher berechnet Punkte\\
+		$h$...Schrittweite\\
+		$i$...Schrittzahl aktuell}
+	\Output{$(x_i,y_i)$}
+	$(a,b) = (x_i,y_i)$
+	\For{k = 1 to m}
+	{
+		$(\tilde x, \tilde y)$ = Prediktor($F$,$(x_{i-1},y_{i-1})$, k*h/m)\\
+		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
+		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
+		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
+		\eIf{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
+		{
+			$(a,b) = (\tilde x, \tilde y)$	
+		}
+		{
+			break
+		}
+	}
+	\For{k = 1 to m}
+	{
+		$(\tilde x, \tilde y)$ = Prediktor($F$,$(a,b)$, h+k*h/m)\\
+		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
+		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
+		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
+		\If{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
+		{
+			$(x_i,y_i) = (\tilde x, \tilde y)$	
+			return
+		}
+	}
+	fail
+	\caption{Kurve Kreuzung}
+\end{algorithm}
+\section{Implementierung von adaptiver Schrittweite}\label{chap:Schrittweite}
 Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzugs durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
 Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
@@ -607,7 +650,7 @@ Die Schrittweite betrug $2\cdot 10^{-3}$ die Schrittanzahl 2000 für die ersten 
 \begin{figure}[H]
 	\centering
 	\includegraphics[trim = 41mm 0mm 35mm 0mm, clip, width=\linewidth]{plots/niveau/test5_}
-
+	\label{fig:nivlines}
 \end{figure}
 
 \section{Anhang: Code-Listings}
