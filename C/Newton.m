@@ -1,4 +1,4 @@
-function [ x2 ] = Newton( F, f, x )
+function [ x2,fail ] = Newton( F, f, x )
 %NEWTON Implementiert das Newtonverfahren auf R->R
 % F soll die Funktion sein
 % f soll die Ableitung der Funktion sein
@@ -11,8 +11,8 @@ x1 = x;
 %F(x)
 x2 = x - F(x)/f(x);
 iters=0;
-
-while(~isZero(x1-x2) && ~isZero((x1-x2)/x1) && ~isZero(F(x2)))
+fail = false;
+while(~isZero(x1-x2) && ~isZero((x1-x2)/x1))
 %    x1
 %    x2
 %    F(x2)
@@ -23,8 +23,8 @@ while(~isZero(x1-x2) && ~isZero((x1-x2)/x1) && ~isZero(F(x2)))
     x2 = x2 - F(x2)/f(x2);
     iters=iters+1;
     if iters >= 100
-        warning('Newton probably wrong');
-        x2 = fzero(F,0);
+        %warning('Newton probably wrong');
+        fail = true;
         break;
     end
 end

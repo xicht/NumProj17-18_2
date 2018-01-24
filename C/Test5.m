@@ -21,3 +21,4 @@ plot(x,y);
 [x y] = implicitCurve_ortho(G, dGx, dGy, x0, y0, 50, h,plottinator); 
 plot(x,y);
 hold off
+print_error = false;
