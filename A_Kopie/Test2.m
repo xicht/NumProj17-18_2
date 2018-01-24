@@ -11,9 +11,9 @@ d2Gyy = @(x,y) 90*y.^8
 
 length=1
 [x0 y0 z0 length0 steps0] = implicitCurve(G, dGx, dGy, 0, 1, length, 0.48*10^-5);
-[x1 y1 z1 length1 steps1] = implicitCurveAdapt2(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 1, length, 5*10^-3, 10^-9,1.8*10^-12);
-[x2 y2 z2 length2 steps2] = implicitCurveAdapt3(G, dGx, dGy, 0, 1, length, 5*10^-3, 10^-9,2.1*10^-11);
-[x3 y3 z3 length3 steps3] = implicitCurveAdapt4(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 1, length, 5*10^-3, 10^-9,1.8*10^-12);
+[x1 y1 z1 length1 steps1] = implicitCurveAdapt2(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 1, length, 5*10^-3, 10^-9,10^-12);
+[x2 y2 z2 length2 steps2] = implicitCurveAdapt3(G, dGx, dGy, 0, 1, length, 5*10^-3, 10^-9,1.5*10^-11);
+[x3 y3 z3 length3 steps3] = implicitCurveAdapt4(G, dGx, dGy, d2Gxx, d2Gxy, d2Gyy, 0, 1, length, 5*10^-3, 10^-9,10^-12);
 
 % figure('DefaultAxesFontSize',14);
 % figure(1)

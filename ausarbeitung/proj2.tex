@@ -244,7 +244,7 @@ Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird 
 \end{wrapfigure}
 Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
 \begin{align*}
-G(x,y) = \sin(10*\pi*(sin(x)-y))
+G(x,y) = \sin(10*\pi*(\sin(x)-y))
 \end{align*}
 mit Nullstellen
 \begin{align*}
@@ -303,10 +303,10 @@ Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusa
 Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ die Ableitung der impliziten Funktion $g'(x)=0$ ist.
 Dies ist einfach zu verifizieren, da
 \begin{align}
-	t_\phi(x,y) = (x*cos(\phi)-y*sin(\phi), x*sin(\phi)+y*cos(\phi))\\
+	t_\phi(x,y) = (x*\cos(\phi)-y*\sin(\phi), x*\sin(\phi)+y*\cos(\phi))\\
 	g'(x) = -\frac{\diff{G}{x}(x,y)}{\diff{G}{y}(x,y)}\\
-	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))*cos(\phi)+\diff{F}{y}(t_\phi(x,y))*sin(\phi)=c(x,y)*sin(\phi + \psi(x,y))\\
-	\diff{G}{y}(x,y)=c(x,y)*cos(\phi + \psi(x,y))
+	\diff{G}{x}(x,y) = \diff{F}{x}(t_\phi(x,y))*\cos(\phi)+\diff{F}{y}(t_\phi(x,y))*\sin(\phi)=c(x,y)*\sin(\phi + \psi(x,y))\\
+	\diff{G}{y}(x,y)=c(x,y)*\cos(\phi + \psi(x,y))
 \end{align}
 Dadurch ist nun $h*n$ annähernd die Kurvenlänge und die Genauigkeit des Prediktorschritts ist unabhängig von der ersten Ableitung von $F$.
 Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine eindeutige Richtung vorgegeben ist, müssen andere Punkte dafür herangezogen werden. Mögliche Ansätze sind u.a. positives Skalarprodukt zwischen aktuellem und letzten Richtungsvektor oder minimale Differenz zwischen aktuellem und letzten $\phi$.
@@ -336,24 +336,18 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 			$\phi$ = $\psi-\frac{\pi}{2}$	//Richtung minimaler Ableitung\\
 			$\phi$ = correctPhi($\phi$)\\
 			$\psi$ = $\phi+\frac{\pi}{2}$	//psi mitkorrigieren\\
-			$\tilde x_i = x_{i-1}+h*cos(\phi)$\\
-			$\tilde y_i = y_{i-1}+h*sin(\phi)$\\
-			$G(a)$ = $F(\tilde x_i+a*cos(\psi),\tilde y_i+a*sin(\psi))$\\
+			$\tilde x_i = x_{i-1}+h*\cos(\phi)$\\
+			$\tilde y_i = y_{i-1}+h*\sin(\phi)$\\
+			$G(a)$ = $F(\tilde x_i+a*\cos(\psi),\tilde y_i+a*\sin(\psi))$\\
 			s = Newton($G$, 0)\\
-			$x_i = \tilde x_{i}+s*cos(\psi)$\\
-			$y_i = \tilde y_{i}+s*sin(\psi)$\\
+			$x_i = \tilde x_{i}+s*\cos(\psi)$\\
+			$y_i = \tilde y_{i}+s*\sin(\psi)$\\
 		}
 	}
 	\caption{Kurve B2}
 \end{algorithm}
 \subsection{Tests}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.85\linewidth]{plots/B/VergleichKorrektur.eps}
-	\caption{Vergleich der Korrekturschrittgrößen zwischen V1 und V2 als 10-facher Radius der roten bzw grünen Kreise für die Funktion $F(x,y) = 0.2x^2+y^2-1$}
-	\label{fig:KorrVergleich_b}
-\end{figure}
-\begin{wrapfigure}{R}{0.4\textwidth}
+\begin{wrapfigure}[12]{r}{0.4\textwidth}
 	\centering
 	\includegraphics[width=1\linewidth]{plots/B/VergleichKorrektur_2.eps}
 	\caption{Wie Abb. \ref{fig:KorrVergleich_b} mit $x^3-xy+x^2-1$}
@@ -361,11 +355,60 @@ Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine 
 \end{wrapfigure}
 Abbildungen \ref{fig:KorrVergleich_b} und \ref{fig:KorrVergleich2_b} stellt die notwendigen Korrekturen nach dem Prediktor für beiden Algorithmen \ref{alg:B_V1} und \ref{alg:B_V2}. Man erkennt dabei, dass der Fehler an Stellen mit großer erster und zweiter Ableitung groß ist.
 Die Laufzeiten beider Algorithmen wurden nicht gemessen, sind aber in beiden Fällen für $\leq10000$ Itterationen nicht bemerkbar.
-
+Ein Fehlerbild, das bei zu großen Schrittweiten und vor allem bei Algorithmus \ref{alg:B_V1} aufgetreten ist das verlassen des Bereichs in dem die Nullstellen liegen. zB dass für $F(x,y)=x^2+y^2-1$ ein $x_n > 1$ wurde. Das Problem kann durch eine Sinnvolle Wahl der Schrittweite verhindert werden.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.75\linewidth]{plots/B/VergleichKorrektur.eps}
+	\caption{Vergleich der Korrekturschrittgrößen zwischen V1 und V2 als 10-facher Radius der roten bzw grünen Kreise für die Funktion $F(x,y) = 0.2x^2+y^2-1$}
+	\label{fig:KorrVergleich_b}
+\end{figure}
+\linebreak
 \section{Aufgabe c}
-Wenn sich beide Ableitungen von $F$ $0$ annähern %todo
-\section{Implementierung von adaptiver Schrittweite}
-Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzuges durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
+Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren an denen sich die Kurve kreuzt oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen um an solchen stellen fortzufahren sind heuristische begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab. 
+\subsection{Kreuzung der Kurve}  
+Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nicht getroffen wird und damit einfach übersprungen wird. Siehe dazu Abbildung \ref{fig:nivlines}.
+Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie vom letzten Punkt aus die Schrittweite (mehr zu der Umsetzung in Sektion \ref{chap:Schrittweite}) zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung} der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
+\begin{algorithm}[h]
+	\label{alg:C_Kreuzung}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$...Funktion\\
+		$(x,y)_n$...bisher berechnet Punkte\\
+		$h$...Schrittweite\\
+		$i$...Schrittzahl aktuell}
+	\Output{$(x_i,y_i)$}
+	$(a,b) = (x_i,y_i)$
+	\For{k = 1 to m}
+	{
+		$(\tilde x, \tilde y)$ = Prediktor($F$,$(x_{i-1},y_{i-1})$, k*h/m)\\
+		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
+		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
+		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
+		\eIf{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
+		{
+			$(a,b) = (\tilde x, \tilde y)$	
+		}
+		{
+			break
+		}
+	}
+	\For{k = 1 to m}
+	{
+		$(\tilde x, \tilde y)$ = Prediktor($F$,$(a,b)$, h+k*h/m)\\
+		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
+		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
+		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
+		\If{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
+		{
+			$(x_i,y_i) = (\tilde x, \tilde y)$	
+			return
+		}
+	}
+	fail
+	\caption{Kurve Kreuzung}
+\end{algorithm}
+\section{Implementierung von adaptiver Schrittweite}\label{chap:Schrittweite}
+Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzugs durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
 Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
 \begin{enumerate}
@@ -490,7 +533,41 @@ Auch bei deutlich kleinerem $c$ (zB um dem Faktor 10 kleiner) liegen die Schritt
 
 Die Bereich für die mögliche Schrittweite war mit $[1,10^{-10}]$ für diesen Test natürlich sehr groß gewählt. Tatsächlich wurden nie Schrittweiten kleiner $5\cdot 10^{-3}$ verwendet. Eine kleinere maximale Schrittweite hätte auch die Probleme der Strategie mit der Länge der Korrektorschrittes verringert. Völlig beseitigt hätte es aber die Probleme nie, da die Schwingung von $\sin(x^2)$ immer schneller werden.
 
-\begin{figure}[H]
+\subsection{$L_1$-Norm des Fehlers}
+Im Vorherigen wurde nur qualitativ darauf geachtet, ob der Algorithmus grobe Fehler macht, aber in keiner Form quantitativ verglichen, welcher Polygonzug näher an $f$ ist, also zB wie groß die Fläche zwischen $f$ und dem Polygonzug ist.
+
+Da wir uns bisher darauf einschränken, dass die Nullstellenmenge von $F$ im betrachten Bereich durch ein $f(x)$ auflösbar ist, folgt dass sowohl $f$ als auch der Polygonzug $p$ wohldefinierte Funktionen von $x$ sind und die Fläche genau die $L_1$-Norm der Funktion $f-p$ ist. Diese ist aber im Allgemeinen nicht einfach zu berechnen, weil man nicht weiß, wo $f-p$ Vorzeichenwechsel hat. 
+
+Schränkt man sich auf den Fall ein, dass $f(x)$ konkav ist, folgt sofort $p(x) \le f(x)$, also $|f(x)-p(x)|=f(x)-p(x)$.
+
+Es seien also $x_1<\cdots < x_n$ die $x$-Werte der bekannten Datenpunkte und $p$ der Polygonzug durch die Punkte $(x_i,f(x_i))_{i=1,\dots,n}$. Dann gilt für die $L_1$-Norm von $f-p$ auf $[x_1,x_n]$:
+
+\begin{align*}
+\norm{f-p}{1} &= \int_{x_1}^{x_n}\!\! f(x)-p(x) dx = \int_{x_1}^{x_n}\!\! f(x) dx - \sum_{i=1}^{n-1} \int_{x_i}^{x_{i+1}}\!\! p(x) dx \\
+&=  \int_{x_1}^{x_n}\!\! f(x) dx - \sum_{i=1}^{n-1} \frac{f(x_{i})+f(x_{i+1})}{2} (x_{i+1}-x_i)
+\end{align*}
+Die letzte Gleichheit folgt daraus, dass $p$ auf den Intervallen $[x_i,x_{i+1}]$ ein Polynom ersten Grades ist und daher von der Trapezregel exakt integriert wird. 
+
+Sei $F(x,y)= x^{10} +y^{10}-1$. Dann kann $F(x,y)=0$ auf $(-1,1)$ für $y>0$ durch die Funktion $f(x)= \sqrt[10]{1-x^{10}}$ aufgelöst werden. Wegen $f''(x) <0$ sieht man leicht, dass $f$ konkav ist. 
+
+Das Integral $ \int_{x_1}^{x_n}\!\! f(x) dx$ wurde mithilfe symbolischer Integration durch Matlab und anschließender Auswertung der Stammfunktion berechnet. Die symbolische Integration mit Matlab war notwendig, da die Stammfunktion nicht durch elementare Funktionen darstellbar ist (man benötigt die hypergeometrische Funktion). 
+
+Der Grund, warum hier $F$ so gewählt wurde (und nicht zB als $x^2+y^2-1$, bei die Stammfunktion von $f$ deutlich einfacher wäre) ist, dass es ein sehr einfaches Beispiel ist, wo $f$ konkav ist und eine sehr unterschiedliche Krümmung hat. 
+
+Es wurden dabei folgende vier Methoden verglichen\footnote{Das sind genau die selben Algorithmen wie vorher, sie werden hier nur nocheinmal aufgezählt, um klarzustellen, welche Spalte der Tabelle sich auf welche Methode bezieht.}:
+\begin{enumerate}
+	\item konstante Schrittweite
+	\item adaptive Schrittweite anhand der Krümmung im Punkt $x_i$
+	\item adaptive Schrittweite anhand der Länge des Korrektorschrittes
+	\item adaptive Schrittweite anhand des gemischten Kriteriums
+\end{enumerate}
+Die Eingabeparameter wurden dabei jeweils so gewählt, dass die Schrittanzahl jeweils (bis auf eine Abweichung $\le 2\%$) gleich ist.
+
+Man sieht, dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{O}(h^2)$ gegen Null gehen. Für äquidistante Stützstellen ist das nicht überraschend, da dies genau der Konvergenzaussage der summierten Trapezregel entspricht (siehe Numerik-Skriptum Bsp 4.9). Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser.
+
+Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
+
+\begin{figure}[ht]
 	\centering
 	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/br}
 	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.1} mit $c=6 \cdot10^{-3}$ (rot, 1087 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
@@ -498,7 +575,7 @@ Die Bereich für die mögliche Schrittweite war mit $[1,10^{-10}]$ für diesen T
 	
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[trim = 41mm 0mm 30mm 0mm, clip, width=\linewidth]{plots/adapt/bg}
 	\caption{Vergleich der Strategie aus Kapitel \ref{chap:5.1.3} mit $c=7.4\cdot10^{-2}$ (grün, 1074 Schritte) mit der gemischten Strategie mit $c=1.3 \cdot10^{-2}$ (blau, 1097 Schritte) }
@@ -532,7 +609,7 @@ Es wird daher folgende Strategie verwendet:
 	\item Sei nun $\Psi : [0,1] \to \R^2 : t \mapsto \binom{m_x}{m_y} + t \binom{x-m_x}{y-m_y}$. Dann ist $ G:= \Psi \circ F : [0,1] \to \R$ stetig mit $G(0)>0$ und $G(1)<0$. Mithilfe des Bisektionsverfahrens kann man eine Nullstelle $t_0$ von $G$ finden.
 	\item Dann ist $\Psi(t_0) \in [a,b] \times [c,d]$ eine Nullstelle von $F$.
 \end{itemize} 
-Diese Strategie hat in unseren Tests immer die Nullstellen gefunden. Nullstellen die gleichzeitig Extremstellen der Funktion $F$ sind, können damit nur durch großen Zufall gefunden werden, da die Funktion bei ihnen keinen Vorzeichenwechsel macht. Das ist kein großer Mangel, da diese Nullstellen aber unterinteressant sind, denn dort ist $\diff{F}{x}=0$ und $\diff{F}{y}=0$, was sie als Startwerte eher unbrauchbar macht.
+Diese Strategie hat in unseren Tests immer die Nullstellen gefunden. Nullstellen die gleichzeitig Extremstellen der Funktion $F$ sind, können damit nur durch großen Zufall gefunden werden, da die Funktion bei ihnen keinen Vorzeichenwechsel macht. Das ist kein großer Mangel, da diese Nullstellen aber uninteressant sind, denn dort ist $\diff{F}{x}=0$ und $\diff{F}{y}=0$, was sie als Startwerte eher unbrauchbar macht.
 
 \subsection{Details der Implementierung}
 
@@ -573,7 +650,7 @@ Die Schrittweite betrug $2\cdot 10^{-3}$ die Schrittanzahl 2000 für die ersten 
 \begin{figure}[H]
 	\centering
 	\includegraphics[trim = 41mm 0mm 35mm 0mm, clip, width=\linewidth]{plots/niveau/test5_}
-
+	\label{fig:nivlines}
 \end{figure}
 
 \section{Anhang: Code-Listings}
