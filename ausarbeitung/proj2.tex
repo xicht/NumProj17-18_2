@@ -366,9 +366,9 @@ Ein Fehlerbild, das bei zu großen Schrittweiten und vor allem bei Algorithmus \
 \section{Aufgabe c}
 Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren an denen sich die Kurve kreuzt oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen um an solchen stellen fortzufahren sind heuristische begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab. 
 \subsection{Kreuzung der Kurve}  
-Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nicht getroffen wird und damit einfach übersprungen wird. Siehe dazu Abbildung \ref{fig:nivlines}.
-Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie vom letzten Punkt aus die Schrittweite (mehr zu der Umsetzung in Sektion \ref{chap:Schrittweite}) zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung} der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
-\begin{algorithm}[h]
+Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nicht getroffen wird und damit einfach übersprungen wird.Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie vom letzten Punkt aus die Schrittweite zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung} der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
+Diese Lösung wurde nicht weiter verfolgt.\\
+\begin{algorithm}[H]
 	\label{alg:C_Kreuzung}
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
@@ -408,7 +408,7 @@ Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie vom letzten
 	\caption{Kurve Kreuzung}
 \end{algorithm}
 \subsection{Richtungswechsel}
-Ein Ansatz mit plötzlichen Richtungswechseln umzugehen ist am Umkreis um den aktuellen Punkt mit Radius Schrittweite möglichst beide Nullstellen zu finden und den nächsten Schritt in Richtung der Nullstelle mit dem größten Abstand zum letzten Schritt zu machen. Wenn man zulässt mehr als zwei Nullstellen zu finden kann diese Lösung auch für Kreuzungsstellen verwendet werden.
+Ein Ansatz mit plötzlichen Richtungswechseln umzugehen ist am Umkreis um den aktuellen Punkt mit Radius Schrittweite möglichst beide Nullstellen zu finden und den nächsten Schritt in Richtung der Nullstelle mit dem größten Abstand zum letzten Schritt zu machen. Wenn man zulässt mehr als zwei Nullstellen zu finden kann diese Lösung auch für Kreuzungsstellen verwendet werden. Diese Variante wurde wie Algorithmus \ref{alg:C_Richtungswechsel} implementiert.
 \begin{algorithm}[h]
 	\label{alg:C_Richtungswechsel}
 	\SetKwInOut{Input}{Input}
@@ -418,36 +418,35 @@ Ein Ansatz mit plötzlichen Richtungswechseln umzugehen ist am Umkreis um den ak
 		$h$...Schrittweite\\
 		$i$...Schrittzahl aktuell}
 	\Output{$(x_i,y_i)$}
-	$(a,b) = (x_i,y_i)$\\
-	\For{k = 1 to m}
+	$(a,b) = (x_{i-1},y_{i-1})$\\
+	$G(\phi) = F(a+h*\cos(\phi),b+h*\sin(\phi))$ \\
+	\For{k = 0 to m}
 	{
-		$(\tilde x, \tilde y)$ = Prediktor($F$,$(x_{i-1},y_{i-1})$, k*h/m)\\
-		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
-		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
-		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
-		\eIf{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
-		{
-			$(a,b) = (\tilde x, \tilde y)$	
-		}
-		{
-			break
-		}
+		$w\left[ k \right]$ = Newton($G$, $\frac{2*\pi*k}{m+1}$)\\
+		$n\left[k\right] = \left(\cos(w\left[k\right]),\sin(w\left[k\right])\right)+(a,b) $
 	}
-	\For{k = 1 to m}
-	{
-		$(\tilde x, \tilde y)$ = Prediktor($F$,$(a,b)$, h+k*h/m)\\
-		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
-		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
-		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
-		\If{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
-		{
-			$(x_i,y_i) = (\tilde x, \tilde y)$	
-			return
-		}
-	}
-	fail
-	\caption{Kurve Kreuzung}
+	i = idx(max(norm($n-(x_{i-2},y_{i-2})$)))\\
+	$(x_i,y_i)$ = n(i)
+	\caption{Kurve Richtungswechsel}
 \end{algorithm}
+\subsection{Tests}
+Zu Testzwecken wurden gezielt zweit Kurven generiert die jeweils eine der beiden zuvor betrachteten Eigenschaften aufweisen.
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{plots/C/Lemniskate.eps}
+		\captionof{figure}{$(x^2+y^2)^2-x^2+y^2=0$}
+		\label{fig:test1}
+	\end{minipage}%
+	\begin{minipage}{.5\textwidth}
+		\centering
+		\includegraphics[width=1\linewidth]{plots/C/Herz.eps}
+		\captionof{figure}{$(x^2+y^2-1)^3-x^2y^3=0$}
+		\label{fig:test2}
+	\end{minipage}
+\end{figure}
+
 \section{Implementierung von adaptiver Schrittweite}\label{chap:Schrittweite}
 Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzugs durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
