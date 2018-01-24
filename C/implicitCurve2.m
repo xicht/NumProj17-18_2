@@ -9,7 +9,7 @@ function [ x, y ] = implicitCurve2( F, dFx, dFy, x0, y0, curvelen, stepWidthMin,
 % Schrittweite an der x-Achse.
 
 
-assert(isZero(F(x0, y0)));
+%assert(isZero(F(x0, y0)));
 assert(stepWidthMin <= stepWidthMax);
 
 stepWidth = (2*stepWidthMin+ stepWidthMin)/3
@@ -49,7 +49,8 @@ function [ xr, yr, phi, chi, length ] = generateNextStep( F, dFx, dFy, x, y, i, 
     dy = dFy(x(i-1), y(i-1));
     dx = dFx(x(i-1), y(i-1));
 global print_error
-    if(abs(dx) < 10^-12 && abs(dx) < 10^-12)
+    if(abs(dx) < 10^-11 && abs(dx) < 10^-11)
+        [xr, yr] = findContinuation(F, dFx, dFy, x, y, i, stepWidth);
     elseif(dx == 0)
         assert(dy ~= 0);
         xr = x(i-1) + stepWidth;
@@ -104,9 +105,12 @@ global print_error
 %        legend('G','gx', 'gy', 'g')
     
     
-        h = Newton(G, g, 0);            %corrector
+        [h, fail] = Newton(G, g, 0);            %corrector
         %h = fzero(G,0);
 
+        if(fail == true)
+            [xr, yr] = findContinuation(F, dFx, dFy, x, y, i-1, stepWidth);
+        else
       
         xr = xr+ h*dir_ortho(1);
         yr = yr+ h*dir_ortho(2);
@@ -117,6 +121,7 @@ if(print_error == true)
     yunit = 10*h * sin(th) + yr;
     plot(xunit, yunit,'g');
 end
+        end
         chi = atan2(yr,xr)-atan2(y(i-1),x(i-1));
         length = stepWidth;
 %        figure(2);
@@ -141,14 +146,25 @@ end
 end
 
 function [a b] = findContinuation(F, dFx, dFy, x, y, i, stepWidth)
-    dir = [cos(chi);sin(chi)];
-    dir_ortho = [cos(phi);sin(phi)];
+    dir = @(chi) [cos(chi);sin(chi)];
+    dir_ortho = @(chi) [cos(chi+pi/2);sin(chi+pi/2)];
 
-    xr = x(i-1)+stepWidth*dir(1);
-    yr = y(i-1)+stepWidth*dir(2);
+    xr = x(i-1);
+    yr = y(i-1);
 
-    G = @(z) F(xr+z*dir_ortho(1), yr+z*dir_ortho(2));
-    gx = @(z) dFx(xr+z*dir_ortho(1), yr+z*dir_ortho(2));
-    gy = @(z) dFy(xr+z*dir_ortho(1), yr+z*dir_ortho(2));
-    g = @(z) dir_ortho' * [gx(z); gy(z)];
+    G = @(z) F(xr+stepWidth*cos(z), yr+stepWidth*sin(z));
+    gx = @(z) dFx(xr+stepWidth*cos(z), yr+stepWidth*sin(z));
+    gy = @(z) dFy(xr+stepWidth*cos(z), yr+stepWidth*sin(z));
+    g = @(z) (dir_ortho(z))' * [gx(z); gy(z)];
+    
+    N = zeros(2,16);
+    for k = [1:8]
+        phi = fzero(G,pi*(k-1)/4);
+        p(k) = phi;
+        N(:,k) = dir(phi)*stepWidth+[xr;yr];
+        n(k) = norm(N(:,k)-[x(i-2);y(i-2)]);
+    end
+    [d,e] = max(n);
+    a = N(1,e);
+    b = N(2,e);
 end

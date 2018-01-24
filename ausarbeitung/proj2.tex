@@ -408,7 +408,46 @@ Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie vom letzten
 	\caption{Kurve Kreuzung}
 \end{algorithm}
 \subsection{Richtungswechsel}
-Ein Ansatz mit plötzlichen Richtungswechseln umzugehen wäre am Umkreis um den aktuellen Punkt mit Radius Schrittweite möglichst viele Nullstellen zu finden und für alle diese Nullstellen, die nicht auf der bisherigen Kurve liegen, den Algorithmus zum plotten rekursiv aufzurufen. Damit können dann nicht nur Richtungswechsel, sondern auch kompliziertere Kreuzungspunkte bewältigt werden.
+Ein Ansatz mit plötzlichen Richtungswechseln umzugehen ist am Umkreis um den aktuellen Punkt mit Radius Schrittweite möglichst beide Nullstellen zu finden und den nächsten Schritt in Richtung der Nullstelle mit dem größten Abstand zum letzten Schritt zu machen. Wenn man zulässt mehr als zwei Nullstellen zu finden kann diese Lösung auch für Kreuzungsstellen verwendet werden.
+\begin{algorithm}[h]
+	\label{alg:C_Richtungswechsel}
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{$F$...Funktion\\
+		$(x,y)_n$...bisher berechnet Punkte\\
+		$h$...Schrittweite\\
+		$i$...Schrittzahl aktuell}
+	\Output{$(x_i,y_i)$}
+	$(a,b) = (x_i,y_i)$\\
+	\For{k = 1 to m}
+	{
+		$(\tilde x, \tilde y)$ = Prediktor($F$,$(x_{i-1},y_{i-1})$, k*h/m)\\
+		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
+		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
+		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
+		\eIf{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
+		{
+			$(a,b) = (\tilde x, \tilde y)$	
+		}
+		{
+			break
+		}
+	}
+	\For{k = 1 to m}
+	{
+		$(\tilde x, \tilde y)$ = Prediktor($F$,$(a,b)$, h+k*h/m)\\
+		$(\tilde x, \tilde y)$ = Korrektor($F$,$(\tilde x, \tilde y)$)\\		
+		dx = $\diff{F}{x}(\tilde x, \tilde y)$\\
+		dy = $\diff{F}{y}(\tilde x, \tilde y)$\\
+		\If{abs(dx) $>$ TOL and abs(dx) $>$ TOL }
+		{
+			$(x_i,y_i) = (\tilde x, \tilde y)$	
+			return
+		}
+	}
+	fail
+	\caption{Kurve Kreuzung}
+\end{algorithm}
 \section{Implementierung von adaptiver Schrittweite}\label{chap:Schrittweite}
 Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzugs durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
