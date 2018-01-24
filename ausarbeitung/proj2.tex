@@ -226,9 +226,9 @@ Demnach ist für hinreichend kleine Schrittweite das Restglied $r_n$ klein genug
 	\caption{Kurve A}
 \end{algorithm}
 Die Implementierung ist eine einfache Umsetzung von Algorithmus \ref{alg:A_const_h}.
-Fehlschlagen können dabei folgende Punkte. $\diff{F}{y}(x_{i-1},y_{i-1})$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen.Das Newtonverfahren kann keine Nullstelle finden bzw findet eine falsche Nullstelle. Das kann behoben werden, indem man die Schrittweite reduziert.
+Fehlschlagen können dabei folgende Punkte. $\diff{F}{y}(x_{i-1},y_{i-1})$ kann 0 sein. Das wurde im Vorhinein ausgeschlossen. Das Newtonverfahren kann keine Nullstelle finden. Das kann dadurch passieren, dass es für das gewählte $x_i$ keine Nullstellen gibt, dann ist die Funktion nicht geeignet oder die Schrittweite wurde zu grob gewählt. Das Newtonverfahren findet eine falsche Nullstellen. Das kann behoben werden, indem man die Schrittweite reduziert.
 \subsection{Tests}
-Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird sehr ungenau, vor allem bei großen Schrittweiten. Siehe Abbildung \ref{fig:Halbkreis_a}.
+Wie zu erwarten war ist die Darstellung an Stellen in denen $f'(x)$ groß wird sehr ungenau, vor allem bei großen Schrittweiten. Siehe Abbildung \ref{fig:Halbkreis_a}.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.85\linewidth]{plots/A/Halbkreis.eps}
@@ -242,7 +242,7 @@ Wie zu erwarten war, ist die Darstellung an Stellen in denen $f'(x)$ groß wird 
 	\caption{Illustration der Nullstellenmenge von $G$.}
 	\label{fig:vieleSinuse_a}
 \end{wrapfigure}
-Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
+Wenn die darzustellende Funktion für ein $x$ mehr als ein $y$ hat, so dass $F(x,y)=0$ so kann es passieren, dass das Newtonverfahren gegen die falsche Nullstelle konvergiert. Ob die gefundene Nullstelle die Korrekte ist oder nicht, ist nur unter großem Aufwand feststellbar. Als Beispiel für so ein Funktion und zur Untersuchung des Verhaltens des Algorithmus verwenden wir
 \begin{align*}
 G(x,y) = \sin(10\pi(\sin(x)-y))
 \end{align*}
@@ -263,8 +263,8 @@ Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der
 Die Voraussetzung des Satzes über implizite Funktionen, dass die Ableitung nach $y$ nicht $0$ werden darf ist sehr restriktiv, da so nicht einmal ein Kreis gezeichnet werden kann. Es ist möglich diese Voraussetzung abzuschwächen indem man fordert, dass in den Nullstellen entweder die Ableitung nach $x$ oder $y$ ungleich $0$ sein müssen. Dadurch kann die Nullstellenmenge der Funktion durch offene Mengen überdeckt werden für die jeweils $F(x,f(x))=0$ oder $F(g(y),y)=0$ gilt.
 \subsection{Implementierung Version 1}
 %also mit 90 Drehungen
-Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist rekursiv den Algorithmus aufzurufen, wenn die Betragsmäßige Ableitung in eine Richtung größer wird als die andere. Wichtig dabei ist auf folgendes zu achten, dass der Wechsel Richtung früh genug erfolgt, damit der Bereich mit Nullstellen nicht in eine Richtung verlassen wird und dass der Richtungswechsel mit dem korrekten Vorzeichen passiert. 
-\begin{algorithm}[h]
+Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist rekursiv den Algorithmus aufzurufen, wenn die Betragsmäßige Ableitung in eine Richtung größer wird als die andere. Wichtig dabei ist auf folgendes zu achten, dass der Wechsel Richtung früh genug erfolgt, damit der Bereich mit Nullstellen nicht in eine Richtung verlassen wird und dass der Richtungswechsel mit dem korrekten Vorzeichen passiert. \\
+\begin{algorithm}[H]
 	\label{alg:B_V1}
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
@@ -348,7 +348,7 @@ Das Problem ist also lösbar, wenn man $\phi=\arctan(f'(x_0))$ wählt. Da die $\
 %\end{align}
 %Dadurch ist nun $h*n$ annähernd die Kurvenlänge und die Genauigkeit des Prediktorschritts ist unabhängig von der ersten Ableitung von $F$.
 
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 	\label{alg:B_V2}
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
@@ -371,8 +371,8 @@ Das Problem ist also lösbar, wenn man $\phi=\arctan(f'(x_0))$ wählt. Da die $\
 		{
 			$\psi$ = atan(dy/dx)			//Richtung maximaler Ableitung\\
 			$\phi$ = $\psi-\frac{\pi}{2}$	//Richtung minimaler Ableitung\\
-			$\phi$ = correctPhi($\phi$)\\
-			$\psi$ = $\phi+\frac{\pi}{2}$	//psi mitkorrigieren\\
+			$\phi$ = correctPhi($\phi$)	//$\phi$ ist bis auf $\pm n\pi$ eindeutig, ggf korrigieren\\
+			$\psi$ = $\phi+\frac{\pi}{2}$	//$\psi$ mitkorrigieren\\
 			$\tilde x_i = x_{i-1}+h*\cos(\phi)$\\
 			$\tilde y_i = y_{i-1}+h*\sin(\phi)$\\
 			$G(a)$ = $F(\tilde x_i+a*\cos(\psi),\tilde y_i+a*\sin(\psi))$\\
@@ -403,7 +403,7 @@ Ein Fehlerbild, das bei zu großen Schrittweiten und vor allem bei Algorithmus \
 \section{Aufgabe c}
 Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren an denen sich die Kurve kreuzt oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen um an solchen stellen fortzufahren sind heuristische begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab. 
 \subsection{Kreuzung der Kurve}  
-Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nicht getroffen wird und damit einfach übersprungen wird.Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie vom letzten Punkt aus die Schrittweite zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung} der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
+Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nur unwahrscheinlich getroffen wird und damit einfach übersprungen wird. Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie die Schrittweite vom letzten Punkt aus zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung} der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
 Diese Lösung wurde nicht weiter verfolgt.\\
 \begin{algorithm}[H]
 	\label{alg:C_Kreuzung}
