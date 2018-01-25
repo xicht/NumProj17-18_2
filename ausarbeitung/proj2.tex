@@ -199,7 +199,7 @@ Für $\frac{d}{dx}\left( \diff{F}{y}(x,f(x))  \right)$ erhält man analog eine �
 Die zweite Aussage folgt aus dem Satz von Taylor und der Tatsache, dass $f''$ als Komposition stetiger Funktionen stetig ist. \hfill $\blacksquare$
 
 \section{Aufgabe a}
-Das Ziel dieser Aufgabenstellung ist es den Graphen, der durch die Nullstellenmenge einer Funktion, numerisch anzunähern. Im ersten Schritt wollen wir dazu einem Gitter $x_j = x_0 + j\cdot h, j \in \left\lbrace1...n\right\rbrace $ entlang $x$ folgen. 
+Das Ziel dieser Aufgabenstellung ist es den Graphen, der durch die Nullstellenmenge einer Funktion $\R^2\to\R$ beschrieben ist, numerisch anzunähern. Im ersten Schritt wollen wir dazu einem Gitter $x_j = x_0 + j\cdot h, j \in \left\lbrace1...n\right\rbrace $ entlang $x$ folgen. 
 Dazu soll die Funktion $F$ auf der gesamten betrachteten Menge die Bedingungen des Hauptsatzes über implizite Funktionen erfüllen und $F(x_0,y_0)=0$ sein. Damit wissen wir, dass $\forall j \in \left\lbrace1...n\right\rbrace: F(x_j,f(x_j))=0$ gilt. Um $y_n = f(x_n)$ zu berechnen betrachte man mittels Mittelwertsatz
 \[
 f(x_{n+1})=f(x_n)+f'(x_n) \cdot h+r_n, \left|r_n\right|\leq \sup\limits_{a,b \in \left[x_n,x_{n+1}\right]}\left|{f'(a)-f'(b)}\right| \cdot h.
@@ -260,10 +260,10 @@ Wie Abbildung \ref{fig:vieleSinuse_schrittweiten_a} zu entnehmen ist beginnt der
 
 
 \section{Aufgabe b}
-Die Voraussetzung des Satzes über implizite Funktionen, dass die Ableitung nach $y$ nicht $0$ werden darf ist sehr restriktiv, da so nicht einmal ein Kreis gezeichnet werden kann. Es ist möglich diese Voraussetzung abzuschwächen indem man fordert, dass in den Nullstellen entweder die Ableitung nach $x$ oder $y$ ungleich $0$ sein müssen. Dadurch kann die Nullstellenmenge der Funktion durch offene Mengen überdeckt werden für die jeweils $F(x,f(x))=0$ oder $F(g(y),y)=0$ gilt.
+Die Voraussetzung des Satzes über implizite Funktionen, dass die Ableitung nach $y$ nicht $0$ werden darf, ist sehr restriktiv, da so nicht einmal ein Kreis gezeichnet werden kann. Es ist möglich, diese Voraussetzung abzuschwächen indem man fordert, dass in den Nullstellen entweder die Ableitung nach $x$ oder $y$ ungleich $0$ sein müssen. Dadurch kann die Nullstellenmenge der Funktion durch offene Mengen überdeckt werden, für die jeweils $F(x,f(x))=0$ oder $F(g(y),y)=0$ gilt.
 \subsection{Implementierung Version 1}
 %also mit 90 Drehungen
-Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist rekursiv den Algorithmus aufzurufen, wenn die Betragsmäßige Ableitung in eine Richtung größer wird als die andere. Wichtig dabei ist auf folgendes zu achten, dass der Wechsel Richtung früh genug erfolgt, damit der Bereich mit Nullstellen nicht in eine Richtung verlassen wird und dass der Richtungswechsel mit dem korrekten Vorzeichen passiert. \\
+Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist rekursiv den Algorithmus aufzurufen, wenn die betragsmäßige Ableitung in eine Richtung größer wird als die andere. Wichtig dabei ist darauf zu achten, dass der Wechsel der Richtung früh genug erfolgt, damit der Bereich mit Nullstellen nicht in eine Richtung verlassen wird, und dass der Richtungswechsel mit dem korrekten Vorzeichen passiert. \\
 \begin{algorithm}[H]
 	\label{alg:B_V1}
 	\SetKwInOut{Input}{Input}
@@ -297,9 +297,9 @@ Die einfachste Variante auf Aufgabe a basierend Aufgabe b zu implementieren ist 
 	}
 	\caption{Kurve B1}
 \end{algorithm}
-Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusagen wie lang die Kurve wird. In Algorithmus \ref{alg:A_const_h} läuft die Kurve von $\left\lbrace x_0\right\rbrace \times\mathbb{R}$ bis $\left\lbrace x_0+h*n\right\rbrace \times\mathbb{R}$. Das bedeutet für $m\in \mathbb{N}$, dass man einen Viertelkreis mit $n=m$ und $h=\frac{1}{m}$ zeichnen kann. Mit Algorithmus \ref{alg:B_V1} benötigt man dafür $n=\lceil m*\sqrt{2}\rceil$ und $h=\frac{1}{m}$, da der Richtungswechsel bei $x_i\approx \sin(\frac{\pi}{4})$ stattfindet.
+Nachteile dieser Implementierung liegen darin, dass es aufwändig ist vorherzusagen, wie lange die Kurve wird. In Algorithmus \ref{alg:A_const_h} läuft die Kurve von $\left\lbrace x_0\right\rbrace \times\mathbb{R}$ bis $\left\lbrace x_0+\cdot n\right\rbrace \times\mathbb{R}$. Das bedeutet für $m\in \mathbb{N}$, dass man einen Viertelkreis mit Radius 1 mit $n=m$ und $h=\frac{1}{m}$ zeichnen kann. Mit Algorithmus \ref{alg:B_V1} benötigt man dafür $n=\lceil m*\sqrt{2}\rceil$ und $h=\frac{1}{m}$, da der Richtungswechsel bei $x_i\approx \sin(\frac{\pi}{4})$ stattfindet.
 \subsection{Implementierung Version 2}
-Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ für die Ableitung der impliziten Funktion $g'(x)=0$ gilt.
+Um die Probleme mit Version 1 zu beheben, vor allem, wenn beide Ableitungen sehr klein sind, ist es möglich nicht nur entlang der Richtungen der kanonischen Basisvektoren zu arbeiten. Stattdessen ist es möglich eine Orthonormalbasis mit Basistransformation $t_\phi$ zu finden, so dass für $G(x,y) = F(t_\phi(x,y))$ für die Ableitung der impliziten Funktion $g'(x)=0$ gilt.
 
 Es sei $\diff{F}{x} \neq 0 \lor \diff{F}{y} \neq 0$ vorausgesetzt. Daraus folgt sofort $\norm{DF(x_0,y_0)}{2} \neq 0$. Sei für $\phi \in \R$ eine Koordinatentransformation:
 \[
@@ -313,7 +313,7 @@ Sei $G_\phi(\tilde{x},\tilde{y}) := F(t_\phi((\tilde{x},\tilde{y}))$. Da die Tra
 
 Da die Norm der Jacobi-Matrix nicht von $\phi$ abhängt, gilt:
 \[
-\left| \diff{G_\phi}{y}(x_0,y_0) \right| = \norm{DF(x_0,y_0)}{2} \sqrt{1-\left(\diff{G_\phi}{x}(x_0,y_0)\right)^2}
+\left| \diff{G_\phi}{y}(x_0,y_0) \right| =  \sqrt{\norm{DF(x_0,y_0)}{2}^2-\left(\diff{G_\phi}{x}(x_0,y_0)\right)^2}.
 \]
 
 Da für die implizite Funktion $g_\phi$ gilt $g_\phi'(\tilde{x}) = - \diff{G}{\tilde{x}}(x,g_\phi(x)) / \diff{G}{\tilde{y}}(x,g_\phi(x))$ folgt
@@ -326,14 +326,13 @@ Mit der Kettenregel erhält man nun, wobei $(t_\phi)_x$ die $x$-Komponente von $
 \begin{align*}
 \diff{G}{\tilde{x}}(\tilde{x},\tilde{y}) &= 
 \diff{}{\tilde{x}} \left(  F(t_\phi(\tilde{x},\tilde{y})) \right) = \diff{F}{x}(t_\phi(\tilde{x},\tilde{y})) \diff{(t_\phi)_x(\tilde{x},\tilde{y})}{\tilde{x}}+\diff{F}{y}(t_\phi(\tilde{x},\tilde{y}))\diff{(t_\phi)_y(\tilde{x},\tilde{y})}{{\tilde{y}}} \\&=
-\diff{F}{x}(x,y) \cos(\phi)+\diff{F}{y}(x,y)\sin(\phi)
+\diff{F}{x}(x,y) \cos(\phi)+\diff{F}{y}(x,y)\sin(\phi).
 \end{align*}
-Es gilt dann
+Es gilt dann:
 \begin{align*}
 \diff{G}{\tilde{x}}(\tilde{x_0},\tilde{y_0}) = 0 &\iff  \diff{F}{x}(x,y) \cos(\phi) = -\diff{F}{y}(x,y)\sin(\phi) \\
 &\iff -\frac{\diff{F}{x}(x_0,y_0)}{\diff{F}{y}(x_0,y_0)}  = \frac{\sin(\phi)}{\cos(\phi)} \\
-&\iff f'(x_0) = \tan(\phi)\\
-&\iff \phi = \arctan(f'(x_0))
+&\iff f'(x_0) = \tan(\phi).
 \end{align*}
 Das Problem ist also lösbar, wenn man $\phi=\arctan(f'(x_0))$ wählt. Da die $\diff{G}{x}(x,y)$ für $\phi$ und $\phi+\pi$ gleich ist und damit keine eindeutige Richtung vorgegeben ist, müssen andere Punkte dafür herangezogen werden. Mögliche Ansätze sind u.a. positives Skalarprodukt zwischen aktuellem und letzten Richtungsvektor oder minimale Differenz zwischen aktuellem und letzten $\phi$.
 
@@ -401,9 +400,9 @@ Ein Fehlerbild, das bei zu großen Schrittweiten und vor allem bei Algorithmus \
 \end{figure}
 \linebreak
 \section{Aufgabe c}
-Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren an denen sich die Kurve kreuzt oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen um an solchen stellen fortzufahren sind heuristische begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab. 
+Wenn alle Richtungsableitungen $\diff{F}{v} = 0$ sind gibt es keine eindeutige Richtung in die die Kurve fortgesetzt werden soll. Das kann u.a. an Stellen passieren, an denen sich die Kurve kreuzt oder die Kurve abrupte Richtungswechsel vollzieht. Algorithmen, um an solchen stellen fortzufahren sind heuristisch begründet und der Erfolg hängt jeweils von der zu plottenden Funktion ab. 
 \subsection{Kreuzung der Kurve}  
-Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nur unwahrscheinlich getroffen wird und damit einfach übersprungen wird. Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie die Schrittweite vom letzten Punkt aus zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung} der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
+Während der Entwicklung waren solche Stellen kein Problem, da üblicherweise nur eine sehr kleine Umgebung des Punktes betroffen ist, die auch ohne gezielte Wahl der Schrittweite nur unwahrscheinlich getroffen wird und damit einfach übersprungen wird. Um die Kreuzung von Kurven gezielt zu behandeln wäre eine Strategie die Schrittweite vom letzten Punkt aus zu variieren. Eine mögliche Implementierung wäre Algorithmus \ref{alg:C_Kreuzung}, der zuerst versucht mit reduzierter Schrittweite näher an die Nullstelle zu kommen um sie dann mit normaler oder erhöhter Schrittweite zu überspringen.
 Diese Lösung wurde nicht weiter verfolgt.\\
 \begin{algorithm}[H]
 	\label{alg:C_Kreuzung}
@@ -451,7 +450,7 @@ Ein Ansatz mit plötzlichen Richtungswechseln umzugehen ist am Umkreis um den ak
 	\SetKwInOut{Input}{Input}
 	\SetKwInOut{Output}{Output}
 	\Input{$F$...Funktion\\
-		$(x,y)_n$...bisher berechnet Punkte\\
+		$(x,y)_n$...bisher berechnete Punkte\\
 		$h$...Schrittweite\\
 		$i$...Schrittzahl aktuell}
 	\Output{$(x_i,y_i)$}
@@ -467,27 +466,27 @@ Ein Ansatz mit plötzlichen Richtungswechseln umzugehen ist am Umkreis um den ak
 	\caption{Kurve Richtungswechsel}
 \end{algorithm}
 \subsection{Tests}
-Zu Testzwecken wurden gezielt zweit Kurven generiert die jeweils eine der beiden zuvor betrachteten Eigenschaften aufweisen.
+Zu Testzwecken wurden gezielt zweit Kurven generiert, die jeweils eine der beiden zuvor betrachteten Eigenschaften aufweisen.
 \begin{figure}[H]
 	\centering
 	\begin{minipage}{.5\textwidth}
 		\centering
 		\includegraphics[width=1\linewidth]{plots/C/Lemniskate.eps}
-		\captionof{figure}{$(x^2+y^2)^2-x^2+y^2=0$\protect\\$\diff{F}{x}=\diff{F}{y}$ in $(0,0)$}
+		\captionof{figure}{$(x^2+y^2)^2-x^2+y^2=0$\protect\\$F=\diff{F}{x}=\diff{F}{y}=0$ in $(0,0)$}
 		\label{fig:test1}
 	\end{minipage}%
 	\begin{minipage}{.5\textwidth}
 		\centering
 		\includegraphics[width=1\linewidth]{plots/C/Herz.eps}
-		\captionof{figure}{$(x^2+y^2-1)^3-x^2y^3=0$\protect\\$\diff{F}{x}=\diff{F}{y}$ in $(0,\pm1),(\pm1,0)$}
+		\captionof{figure}{$(x^2+y^2-1)^3-x^2y^3=0$\protect\\$F=\diff{F}{x}=\diff{F}{y}=0$ in $(0,\pm1)$}
 		\label{fig:test2}
 	\end{minipage}
 \end{figure}
 
 \section{Implementierung von adaptiver Schrittweite}\label{chap:Schrittweite}
-Das Ziel von adaptiver Schrittweite ist es im Idealfall, dass der Abstand des Polygonzugs durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
+Das Ziel von adaptiver Schrittweite ist im Idealfall, dass der Abstand des Polygonzugs durch die Punkte $(x_i,y_i)$ zur Nullstellenmenge kleiner ist als eine vorgegebene Konstante und dafür möglichst wenige Punkte bzw. möglichst wenig Rechenzeit benötigt werden.
 
-Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
+Für die adaptive Schrittweite ergeben sich zwei Problemstellungen:
 \begin{enumerate}
 	\item Die Datenpunkte $(x_i,y_i)$ sollen möglichst genau sein.
 	\item Der Polygonzug soll die Nullstellenmenge möglichst gut approximieren.
@@ -495,9 +494,9 @@ Für den die adaptive Schrittweite ergeben sich zwei Problemstellungen:
 
 Die erste Problemstellung ist recht einfach zu lösen: Durch das Newton-Verfahren im Korrektor-Schritt ist $(x_i,y_i)$ extrem nah an einer Nullstelle -- die dabei bleibende geringe Abweichung wird auch nicht Schrittweite des Prediktors beeinflusst. Das einzige was hier zu tun ist, ist also die Schrittweite zu verkleinern, falls das Newton-Verfahren nicht konvergiert. 
 
-Die zweite Problemstellung ist die wesentlich interessanter, die im folgenden zu lösen versucht wird. Der Einfachheit halber werden mögliche Strategien für adaptive Schrittweite zuerst an der Implementierung aus Aufgabe a getestet, da das Koordinatensystem dort noch fest ist. Dann werden sie, falls möglich und sinnvoll, auf den allgemeinen Fall ausgeweitet.
+Die zweite Problemstellung ist die wesentlich interessanter, die im folgenden zu lösen versucht wird. Der Einfachheit halber werden mögliche Strategien für adaptive Schrittweite zuerst an der Implementierung aus Aufgabe a getestet, da das Koordinatensystem dort noch fest ist.
 
-Wir gehen bei den Überlegungen dazu überdies davon aus, dass die Datenpunkte selbst korrekt sind bzw. dass wir deren Fehler vernachlässigen können.
+Wir gehen bei den Überlegungen dazu daher davon aus, dass die Datenpunkte selbst korrekt sind bzw. dass wir deren Fehler vernachlässigen können.
 \subsection{Mögliche Strategien für Aufgabe a}\label{chap:5.1}
 Wir nehmen nun an, dass es auf $(a,b)$ eine Funktion $f$ gibt, sodass $F(x,f(x))=0$ für alle $x \in (a,b)$. 
 
@@ -511,11 +510,11 @@ Die oben vorgestellten Strategien sind derart gewählt, dass sie sich völlig pr
 
 \subsubsection{Abschätzung der Schrittweite anhand der Krümmung von $f$}\label{chap:5.1.1}
 
- Zusätzlich dazu nehmen wir an, dass $F \in C^2((a,b))$, was nach Satz ... eine hinreichende Bedingung für $f \in C^2((a,b))$ ist. Außerdem liefert der Satz dann eine explizite Darstellung von $f''$.  
+ Zusätzlich dazu nehmen wir an, dass $F \in C^2((a,b))$, was nach Satz 2 eine hinreichende Bedingung für $f \in C^2((a,b))$ ist. Außerdem liefert der Satz dann eine explizite Darstellung von $f''$.  
 
 Sei $x_0 \in (a,b)$ ein Startwert und $c>0$ eine vorgegebene Toleranz. Das Ziel ist es nun, ein (möglichst großes) $h \in (0,h_{max})$ zu finden, sodass die Gerade zwischen $(x_0,f(x_0))$ und $(x_0+h,f(x_0+h))$ maximal um $c$ von $f$ abweicht. Hat man so ein $h$ gefunden, kann man $x_1 := x_0+h$ setzen und von dort aus fortfahren, um insgesamt einen Polygonzug zu erhalten, für den diese Abschätzung gilt. 
 
-Bei einen einzelnen Iterationsschritt handelt es sich dabei um eine lineare Interpolationsaufgabe, da wir nach dem Korrektorschritt davon ausgehen können, dass $f(x_0)$ und $f(x_0+h)$ nahezu korrekt ist. Es geht hier also um die Frage, wie sich $f$ zwischen diesen Punkten verhält, insbesondere wie sehr es von einer Geraden durch die Punkte $(x_0,f(x_0))$ und $(x_0+h,f(x_0+h))$ abweicht.
+Bei einem einzelnen Iterationsschritt handelt es sich dabei um eine lineare Interpolationsaufgabe, da wir nach dem Korrektorschritt davon ausgehen können, dass $f(x_0)$ und $f(x_0+h)$ nahezu korrekt sind. Es geht hier also um die Frage, wie sich $f$ zwischen diesen Punkten verhält, insbesondere wie sehr es von einer Geraden durch die Punkte $(x_0,f(x_0))$ und $(x_0+h,f(x_0+h))$ abweicht.
 
  Die Gleichung der Interpolationsgeraden $g_h$ ist gegeben durch (vgl Skriptum Bsp 3.17):
 \[
@@ -537,7 +536,7 @@ Daher gilt für $h \in (0,h_{max})$:
 
 Da das numerische Berechnen des Supremums nicht möglich ist, kann man an dieser Stelle nicht mehr so weiterarbeiten, dass obige Abschätzungen garantiert werden. In einem ersten Schritt kann man heuristisch
 \[
-h := \sqrt{\frac{8c}{|f''(x_0)| +\frac{8c}{h_{max}^2} }} \in (0,h_{max})
+h := \sqrt{\frac{8c}{|f''(x_0)| +\frac{8c}{h_{max}^2} }} \in (0,h_{max}]
 \]
 wählen. Dann sind zwar keine der obigen Abschätzungen garantiert, man hat einen ersten Ansatz für adaptive Schrittweite. Zusätzlich dazu wird bei der Implementierung auch eine Mindestschrittweite vorgegeben, die nicht unterschritten werden darf. 
 
@@ -547,7 +546,7 @@ Der Prediktor tut nichts anderes als eine Tangente $t_i(x)$ entlang von $f$ durc
 
 Ein Vorteil dieses Verfahrens ist, dass es sehr wenig Aufwand hat und weder $F \in C^2$ gefordert werden muss noch Ableitungen zweiter Ordnung benötigt werden. 
 
-Ein Nachteil ist, dass man erst nach dem Prediktor- und Korrektschritt $d$ erhält und dann "falls $d$ zu groß war", Prediktor- und Korrektschritt wiederholen muss. Das zweite Problem, ist dass vorerst nicht klar, ist aber welcher Schranke für $d$ man den Iterationsschritt wiederholen soll und um wie viel keiner die Schrittweite dann sein soll.
+Ein Nachteil ist, dass man erst nach dem Prediktor- und Korrektschritt $d$ erhält und dann "falls $d$ zu groß war", Prediktor- und Korrektschritt wiederholen muss. Das zweite Problem, ist dass vorerst nicht klar, ist ab welcher Schranke für $d$ man den Iterationsschritt wiederholen soll und um wie viel keiner die Schrittweite dann sein soll.
 
 Um die intuitiv vernünftige Tatsache, dass ein großer Korrektorschritt ein Anzeichen dafür ist, dass $f$ nicht gut approximiert wird, auch formal plausibel zu machen und ein Gefühl dafür zu bekommen, welche $d$ ''zu groß'' sind, kann man sich folgendes überlegen:
 
@@ -555,7 +554,7 @@ Wir wissen, dass $(f-t_i)(x_i)=0$, $(f-t_i)'(x_i)=0$ und $(f-t_i)''=f''$. Daraus
 \[
 \exists \xi \in (x_i,x_{i+1}) : (f-t_i)(x_{i+1}) = \frac{f''(\xi)}{2}(x_{i+1}-x_i)^2 = \frac{f''(\xi)}{2}h^2.
 \]
-Wegen $\frac{f''(\xi)}{2}(x_{i+1}-x_i)^2$ kann man daraus folgern, dass
+Wegen $|f-t_i|(x_{i+1})=d$ kann man daraus folgern, dass
 \[
 \exists \xi \in (x_i,x_{i+1}) : h = \sqrt{\frac{2d}{|f''(\xi)|}}.
 \]
@@ -574,17 +573,17 @@ Die Funktionen haben also jetzt folgende Form:
 \end{verbatim}
 Dabei sind die Eingabe-Parameter:
 \begin{itemize}
-	\item Die ersten sechs sind $F$ bzw deren Ableitungen (werden die Ableitungen 2. Ordnung nicht gebraucht, entfallen sie)
-	\item \verb|x0| und \verb|y0| sind die Startwerte
-	\item \verb|length| ist die Ziel-Länge des Polygonzuges
-	\item \verb|maxStepWidth| und \verb|minStepWidth| geben der Bereich für die Schrittweite an
+	\item Die ersten sechs sind $F$ bzw dessen Ableitungen (werden die Ableitungen 2. Ordnung nicht gebraucht, entfallen sie).
+	\item \verb|x0| und \verb|y0| sind die Startwerte.
+	\item \verb|length| ist die Ziel-Länge des Polygonzuges.
+	\item \verb|maxStepWidth| und \verb|minStepWidth| geben der Bereich für die Schrittweite an.
 	\item \verb|c| ist die Konstante $c$ aus Kapitel \ref{chap:5.1}.
 \end{itemize}
 
 Die Ausgabe-Daten sind:
 \begin{itemize}
 	\item \verb|x| und \verb|y| sind die Vektoren der Eckpunkte des Polygonzuges.
-	\item \verb|z| dient zur Ausgabe eines der Parameter für die adaptive Schrittweite (zu Testzwecken)
+	\item \verb|z| dient zur Ausgabe eines der Parameter für die adaptive Schrittweite (zu Testzwecken).
 	\item \verb|steps| ist die Anzahl der benötigten Schritte.
 \end{itemize}
 
@@ -600,13 +599,13 @@ Es sind folgende Funktionen implementiert worden:
 \subsection{Tests}
 Die Strategien wurden für die Funktion $F(x,y) := \sin(x^2)-y$ getestet. Die Nullstellenmenge von $F$ ist also genau der Graph von $f(x)=\sin(x^2)$. Dabei war Parameter \verb|length| jeweils 200, die Schrittweite durfte zwischen 1 und $10^{-10}$ variieren. Der Parameter \verb|c| wurde so gewählt, dass die verschiedenen Strategie jeweils möglichst gleich viele Schritte benötigten, um die Ergebnisse sinnvoll vergleichen zu können.
 
-In Abbildung \ref{fig:br} sieht man, dass die gemischte Strategie besser ist als ein alleiniges Betrachten der Krümmung im vorherigen Punkt. Beim ersten Schritt ist startet man im Punkt $(0,f(0))$, wo $f''(x) = (\sin(x^2))''= 2\cdot \cos(x^2) - 4\cdot x^2 \cdot \sin(x^2)$ den Wert 2 hat, also im Vergleich zu den Werten von $f''$ klein ist. Daher wird eine zu große Schrittweite verwendet. Bei $x\approx2.521$ hat $f''$ ungefähr den Wert 0.160, was zu einer so großen Schrittweite führt, das ein Teil der Graphen übersprungen wird. Bei der gemischten Strategie war der Korrektorschritt dort aber dann so groß, dass die Schrittweite verkleinert wurde und es zu keinen Problemen kam. Später wird das Verhalten dieses Verfahren besser, weil die Funktionswerte von $f''$ tendenziell größer werden.
+In Abbildung \ref{fig:br} sieht man, dass die gemischte Strategie besser ist als ein alleiniges Betrachten der Krümmung im vorherigen Punkt. Beim ersten Schritt ist startet man im Punkt $(0,f(0))$, wo $f''(x) = (\sin(x^2))''= 2\cdot \cos(x^2) - 4\cdot x^2 \cdot \sin(x^2)$ den Wert 2 hat, also im Vergleich zu den Werten von $f''$ klein ist. Daher wird eine zu große Schrittweite verwendet. Bei $x\approx2.521$ hat $f''$ ungefähr den Wert 0.160, was zu einer so großen Schrittweite führt, das ein Teil der Graphen übersprungen wird. Bei der gemischten Strategie war der Korrektorschritt dort aber dann so groß, dass die Schrittweite verkleinert wurde und es zu keinen Problemen kam. Für großes $x$ wird das Verhalten dieses Verfahren besser, weil die Funktionswerte von $f''$ tendenziell größer werden.
 
-In Abbildung \ref{fig:bg} sieht man, dass die gemischte Strategie dem alleinigen Betrachten der Länge des Korrektorschrittes deutlich überlegen ist. Insbesondere wenn die Schwingung von $\sin(x^2)$ schon sehr groß ist, kann es passieren, dass auch bei sehr großer Schrittweite der Korrektorschritt nur sehr klein ist, weil ''zufällig'' fast eine Nullstelle von $F$ getroffen wurde. Dabei können wie man beispielsweise bei $x\approx11$ und $x\approx13$ sieht, sogar mehrere Schwingungen von $f$ einfach ''übersehen'' werden.
+In Abbildung \ref{fig:bg} sieht man, dass die gemischte Strategie dem alleinigen Betrachten der Länge des Korrektorschrittes deutlich überlegen ist. Insbesondere, wenn die Schwingung von $\sin(x^2)$ schon sehr groß ist, kann es passieren, dass auch bei sehr großer Schrittweite der Korrektorschritt nur sehr klein ist, weil ''zufällig'' fast eine Nullstelle von $F$ getroffen wurde. Dabei können wie man beispielsweise bei $x\approx11$ und $x\approx13$ sieht, sogar mehrere Schwingungen von $f$ einfach ''übersehen'' werden.
 
 Auch bei deutlich kleinerem $c$ (zB um dem Faktor 10 kleiner) liegen die Schrittanzahlen in der Größenordnung von 400. Dort liefern die Abschätzung der Krümmung sowie die gemischte Strategie noch relativ brauchbare Ergebnisse. Die Schrittweitensteuerung anhand des Korrektorschrittes liefert dann hingegen unbrauchbare Ergebnisse.
 
-Die Bereich für die mögliche Schrittweite war mit $[1,10^{-10}]$ für diesen Test natürlich sehr groß gewählt. Tatsächlich wurden nie Schrittweiten kleiner $5\cdot 10^{-3}$ verwendet. Eine kleinere maximale Schrittweite hätte auch die Probleme der Strategie mit der Länge der Korrektorschrittes verringert. Völlig beseitigt hätte es aber die Probleme nie, da die Schwingung von $\sin(x^2)$ immer schneller werden.
+Der Bereich für die mögliche Schrittweite war mit $[1,10^{-10}]$ für diesen Test natürlich sehr groß gewählt. Tatsächlich wurden nie Schrittweiten kleiner $5\cdot 10^{-3}$ verwendet. Eine kleinere maximale Schrittweite hätte auch die Probleme der Strategie mit der Länge der Korrektorschrittes verringert. Völlig beseitigt hätte es aber die Probleme nie, da die Schwingung von $\sin(x^2)$ immer schneller werden.
 
 \begin{figure}[ht]
 	\centering
@@ -654,9 +653,9 @@ Die Eingabeparameter wurden dabei jeweils so gewählt, dass die Schrittanzahl je
 	\label{fig:fehler1}
 \end{figure}
 
-Man sieht in Abbildung \ref{fig:fehler1}, dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{O}(n^{-2})$ gegen Null gehen. Da für äquidistante Stützstellen die Schrittweite $h$ proportional zu $n^{-1}$ ist, ist das nicht überraschend. Das entspricht nämlich genau der aus der Vorlesung bekannten (siehe Numerik-Skriptum Bsp 4.9) Konvergenzaussage der summierten Trapezregel: Der Fehler der Integrals geht mit $\mathcal{O}(h^2)$ gegen null.
+Man sieht in Abbildung \ref{fig:fehler1}, dass die Fehler bei allen Methoden mit der Größenordnung $\mathcal{O}(n^{-2})$ gegen Null gehen. Für äquidistante Stützstellen ist die Schrittweite $h$ proportional zu $n^{-1}$ ist, ist das Ergebnis in dem Fall nicht überraschend. Das entspricht nämlich genau der aus der Vorlesung bekannten (siehe Numerik-Skriptum Bsp 4.9) Konvergenzaussage der summierten Trapezregel: Der Fehler des Integrals geht mit $\mathcal{O}(h^2)$ gegen null.
 
-Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser. Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. 
+Die Methoden mit adaptiver Schrittweite haben also alle die selbe Konvergenzggeschwindigkeit, sind allerdings alle um einen Faktor in der Größenordnung 10 besser. Zwischen den einzelnen Strategien ist kein sehr großer Unterschied, wobei die gemischte Strategie etwas besser ist gefolgt von der Betrachtung der Länge des Korrektorschrittes. Daraus dass der Faktor zwischen den Fehlern mit adaptiver Schrittweite und dem ohne bei wachsendem $n$ nicht kleiner wird, kann man schließen, dass die apadaptive Schrittweite auch für kleine Schrittweiten noch gut funktioniert und sinnvoll ist.
 
 \section{Implementierung von Niveaulinien}
 \subsection{Problemstellung und Idee der Implementierung}
@@ -706,7 +705,7 @@ implementiert. Dabei sind:
 %das sind jetzt sehr informatik / matlab-syntax-lastige dinge, die man auch streichen kann
 %aber falls man den code wo einbindet sollte man es vlt erwähnt haben, damit die leute nicht über unbekannte syntax stolpern
 
-Da die Anzahl der Datenpunkte für unterschiedliche Niveaulinien sehr unterschiedlich sein kann (zB wegen unterschiedlicher Länge oder Krümmung) und man die jeweiligen Anzahl je nach Algorithmus im Vorhinein auch nicht weiß, ist es nicht sinnvoll, alle Vektoren der $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveau-Linien in gemeinsame Matrizen der Art $X, Y \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein cell-Arays an, der $k$ Vektoren der Länge $Steps$ enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
+Da die Anzahl der Datenpunkte für unterschiedliche Niveaulinien sehr unterschiedlich sein kann (zB wegen unterschiedlicher Länge oder Krümmung) und man die jeweiligen Anzahl je nach Algorithmus im Vorhinein auch nicht weiß, ist es nicht sinnvoll, alle Vektoren der $x$- bzw. $y$-Werte der Punkte für die einzelnen Niveau-Linien in gemeinsame Matrizen der Art $X, Y \in \R^{k \times maxSteps}$ zu schreiben. Stattdessen bietet sich ein \verb|cell|-Arays an, der $k$ Vektoren der Länge \verb|Steps(j)| enthält. Der Zugriff auf die einzelnen Vektoren erfolgt durch \verb|X{j}|.
 
 Die Implementierung der Nullstellensuche ist in Algorithmus \ref{alg:NSt} genauer beschrieben.\\
 \begin{algorithm}[H]
@@ -718,7 +717,7 @@ Die Implementierung der Nullstellensuche ist in Algorithmus \ref{alg:NSt} genaue
 	\Output{$(x_0,y_0)$ ...Nullstelle}
 	$m= (m_x,m_y) = ((a+b)/2,(c+d)/2)$ \\
 	
-	\If{isZero(F(m))}{ $(x_0,y_0)=(m_x,m_y)$ \\ return
+	\If{abs(F(m))<TOL}{ $(x_0,y_0)=(m_x,m_y)$ \\ return
 	}
 	\If{$F(m)<0$}{rufe die Funktion rekursiv mit $-F$ auf}
 	foundNegValue=false
@@ -759,7 +758,7 @@ Die Schrittweite betrug $2\cdot 10^{-3}$ die Schrittanzahl 2000 für die ersten 
 \end{figure}
 
 \section{Anhang: Code-Listings}
-Der gesamte Code und diese Ausarbeitung ist unter \url{https://github.com/xicht/NumProj17-18_2} auffindbar.
+Der gesamte Code und diese Ausarbeitung sind unter \url{https://github.com/xicht/NumProj17-18_2} auffindbar.
 %\lstinputlisting[firstline=1, lastline=1000,caption=Implementierung der Nullstellensuche im $\R^2$]{code/findZero.m}
 %man wird wohl nur einzelne Ausschnitte im Fließtext haben wollen
 
